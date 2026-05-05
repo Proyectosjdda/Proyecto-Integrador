@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/valou_logo_1777947078533.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Valou | Luxury Fashion</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+      <div class="nav-container">
+        <div class="nav-links">
+          <a href="#" id="nav-home">Inicio</a>
+          <a href="#collections" id="nav-collections">Colección</a>
+        </div>
+        <div class="logo">
+          <!-- Added mix-blend-mode via CSS class to make background transparent -->
+          <img src="/valou_logo_1777947078533.png" alt="Valou Logo" class="logo-img">
+        </div>
+        <div class="nav-icons">
+          <a href="#" id="cart-icon" class="cart-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <span class="cart-count" id="cart-count">0</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main View (Hero + Gallery) -->
+    <div id="main-view">
+      <!-- Hero Section -->
+      <header class="hero" id="home">
+        <div class="hero-overlay"></div>
+        <div class="hero-content" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-perspective="1000">
+          <h1 class="hero-title">Elegance Redefined</h1>
+          <p class="hero-subtitle">The New Collection</p>
+          <a href="#collections" class="btn-primary">Descubrir</a>
+        </div>
+      </header>
+
+      <!-- Collection Section -->
+      <section id="collections" class="collection-section">
+        <h2 class="section-title">La Collection</h2>
+        
+        <!-- Filters -->
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all">Todos</button>
+          <button class="filter-btn" data-filter="nina">Niña</button>
+          <button class="filter-btn" data-filter="nino">Niño</button>
+        </div>
+
+        <div class="grid-container" id="product-grid">
+          <!-- Products will be injected via JS -->
+        </div>
+      </section>
+    </div>
+
+    <!-- Product Detail View (Hidden by default) -->
+    <div id="detail-view" class="hidden">
+      <div class="detail-container">
+        <button id="btn-back" class="btn-back">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Volver a la Colección
+        </button>
+        
+        <div class="detail-content" id="detail-content">
+          <!-- Detail will be injected via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Drawer -->
+    <div class="cart-overlay hidden" id="cart-overlay"></div>
+    <div class="cart-drawer" id="cart-drawer">
+      <div class="cart-header">
+        <h2>Tu Carrito</h2>
+        <button id="close-cart" class="close-btn">&times;</button>
+      </div>
+      <div class="cart-items" id="cart-items">
+        <!-- Cart items injected here -->
+      </div>
+      <div class="cart-footer">
+        <button class="btn-whatsapp" id="btn-checkout-cart" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.129.332.202.043.073.043.423-.101.827zM22.002 12c0-5.514-4.486-10-10-10-5.512 0-10 4.486-10 10 0 1.827.49 3.536 1.349 5.05l-1.35 4.95 5.093-1.33c1.477.781 3.167 1.225 4.935 1.225l.006-.002c5.512 0 10-4.486 10-10zm-10 8.058l-.004.002c-1.554 0-3.075-.417-4.402-1.204l-.316-.188-3.27.854.87-3.188-.206-.328c-.868-1.381-1.325-2.981-1.325-4.606 0-4.409 3.589-8 8-8s8 3.591 8 8-3.589 8-8 8z"/></svg>
+          Enviar Pedido
+        </button>
+      </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="btn-top" class="btn-top hidden">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+    </button>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/573177307192?text=Hola,%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20sobre%20Valou" target="_blank" class="whatsapp-float">
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.129.332.202.043.073.043.423-.101.827zM22.002 12c0-5.514-4.486-10-10-10-5.512 0-10 4.486-10 10 0 1.827.49 3.536 1.349 5.05l-1.35 4.95 5.093-1.33c1.477.781 3.167 1.225 4.935 1.225l.006-.002c5.512 0 10-4.486 10-10zm-10 8.058l-.004.002c-1.554 0-3.075-.417-4.402-1.204l-.316-.188-3.27.854.87-3.188-.206-.328c-.868-1.381-1.325-2.981-1.325-4.606 0-4.409 3.589-8 8-8s8 3.591 8 8-3.589 8-8 8z"/></svg>
+    </a>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
