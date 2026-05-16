@@ -183,10 +183,25 @@ function removeFromCart(index) {
 function updateCartUI() {
   cartCount.innerText = cart.reduce((acc, item) => acc + item.qty, 0);
   
+  const cartTotalPriceEl = document.getElementById('cart-total-price');
+  
   if (cart.length === 0) {
     cartItemsContainer.innerHTML = '<p style="color: #888; text-align: center; margin-top: 50px;">Tu carrito está vacío.</p>';
     btnCheckoutCart.disabled = true;
+    if (cartTotalPriceEl) cartTotalPriceEl.innerText = "$0";
     return;
+  }
+
+  let total = 0;
+  cart.forEach(item => {
+    const numericPrice = parseFloat(item.price.replace(/[$\.]/g, '').replace(/,/g, ''));
+    if (!isNaN(numericPrice)) {
+      total += numericPrice * item.qty;
+    }
+  });
+
+  if (cartTotalPriceEl) {
+    cartTotalPriceEl.innerText = "$" + total.toLocaleString('es-CO');
   }
 
   btnCheckoutCart.disabled = false;
@@ -194,17 +209,36 @@ function updateCartUI() {
     <div class="cart-item">
       <img src="${item.image}" alt="${item.name}">
       <div class="cart-item-info">
+        <p class="cart-item-brand">CLEMONT.CO</p>
         <h4 class="cart-item-title">${item.name}</h4>
-        <p class="cart-item-meta">Talla: ${item.size} | Cantidad: ${item.qty}</p>
         <p class="cart-item-price">${item.price}</p>
-        <button class="cart-item-remove" onclick="removeFromCart(${index})">Eliminar</button>
+        <p class="cart-item-meta">${item.size}</p>
+        <div class="cart-item-actions">
+          <div class="qty-selector">
+            <button class="qty-btn" onclick="updateQty(${index}, -1)">−</button>
+            <span class="qty-val">${item.qty}</span>
+            <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
+          </div>
+          <button class="cart-item-remove" onclick="removeFromCart(${index})">Quitar</button>
+        </div>
       </div>
     </div>
   `).join('');
 }
 
+function updateQty(index, delta) {
+  if (cart[index].qty + delta > 0) {
+    cart[index].qty += delta;
+  } else {
+    removeFromCart(index);
+    return;
+  }
+  updateCartUI();
+}
+
 // Global scope for onclick
 window.removeFromCart = removeFromCart;
+window.updateQty = updateQty;
 
 function openCart() {
   cartOverlay.classList.remove('hidden');
