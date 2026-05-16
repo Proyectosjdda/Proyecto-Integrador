@@ -1,5 +1,5 @@
 import { auth, db, storage } from './firebaseConfig.js';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from 'firebase/auth';
 import { collection, onSnapshot, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const WAPP_NUMBER = "573177307192";
@@ -30,6 +30,7 @@ const btnLogout = document.getElementById('btn-logout');
 const authForm = document.getElementById('auth-form');
 const authEmail = document.getElementById('auth-email');
 const authPassword = document.getElementById('auth-password');
+const authName = document.getElementById('auth-name');
 const authToggleBtn = document.getElementById('auth-toggle-btn');
 const authTitle = document.getElementById('auth-title');
 const authSubmit = document.getElementById('auth-submit');
@@ -130,6 +131,8 @@ function showProductDetail(product) {
         <div class="detail-meta">
           <p><strong>Colección:</strong> <span style="text-transform: capitalize;">${product.category}</span></p>
           <p><strong>Vendedor:</strong> ${product.author || 'Usuario'}</p>
+          ${product.authors ? `<p><strong>Autores:</strong> ${product.authors}</p>` : ''}
+          ${product.materials ? `<p><strong>Materiales:</strong> ${product.materials}</p>` : ''}
         </div>
 
         <div style="margin-bottom: 10px;"><strong>Selecciona una Talla:</strong></div>
@@ -327,6 +330,15 @@ document.addEventListener('DOMContentLoaded', () => {
     isRegisterMode = !isRegisterMode;
     authTitle.innerText = isRegisterMode ? 'Registrarse' : 'Iniciar Sesión';
     authSubmit.innerText = isRegisterMode ? 'Crear Cuenta' : 'Entrar';
+    
+    if (isRegisterMode) {
+      authName.classList.remove('hidden');
+      authName.setAttribute('required', 'true');
+    } else {
+      authName.classList.add('hidden');
+      authName.removeAttribute('required');
+    }
+
     document.getElementById('auth-toggle-text').innerHTML = isRegisterMode 
       ? `¿Ya tienes cuenta? <a href="#" id="auth-toggle-btn" style="color: var(--color-accent);">Entrar</a>`
       : `¿No tienes cuenta? <a href="#" id="auth-toggle-btn" style="color: var(--color-accent);">Regístrate</a>`;
@@ -339,11 +351,15 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const email = authEmail.value;
     const password = authPassword.value;
+    const name = authName.value;
     authError.innerText = '';
     
     try {
       if (isRegisterMode) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(userCredential.user, { displayName: name });
+        // Update local currentUser immediately so upload sees it without reload
+        currentUser = { ...userCredential.user, displayName: name };
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
@@ -440,6 +456,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const name = document.getElementById('up-name').value;
     const price = document.getElementById('up-price').value;
+    const authors = document.getElementById('up-authors').value;
+    const materials = document.getElementById('up-materials').value;
     const category = document.getElementById('up-collection').value;
     const sizes = document.getElementById('up-sizes').value;
     const description = document.getElementById('up-desc').value;
@@ -459,11 +477,13 @@ document.addEventListener('DOMContentLoaded', () => {
       await addDoc(collection(db, 'products'), {
         name,
         price,
+        authors,
+        materials,
         image: downloadURL,
         category,
         sizes,
         description,
-        author: currentUser.email.split('@')[0],
+        author: currentUser.displayName || currentUser.email.split('@')[0],
         createdAt: new Date()
       });
       

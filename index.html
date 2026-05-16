@@ -159,6 +159,7 @@
         <span class="close-modal" id="close-auth-modal">&times;</span>
         <h2 id="auth-title">Iniciar Sesión</h2>
         <form id="auth-form">
+          <input type="text" id="auth-name" placeholder="Nombre del Estudiante" class="hidden" />
           <input type="email" id="auth-email" placeholder="Correo electrónico" required />
           <input type="password" id="auth-password" placeholder="Contraseña" required />
           <button type="submit" class="btn-primary" id="auth-submit" style="width: 100%; margin-top: 15px;">Entrar</button>
@@ -176,6 +177,8 @@
         <form id="upload-form">
           <input type="text" id="up-name" placeholder="Nombre de la prenda" required />
           <input type="text" id="up-price" placeholder="Precio (ej. $350.000)" required />
+          <input type="text" id="up-authors" placeholder="Autores (Nombres de los estudiantes)" required />
+          <input type="text" id="up-materials" placeholder="Materiales principales" required />
           
           <div class="dropzone" id="dropzone">
             <input type="file" id="up-file" accept="image/*" class="file-input" hidden />
