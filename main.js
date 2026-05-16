@@ -469,7 +469,21 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('asesoria').scrollIntoView({ behavior: 'smooth' });
         }, 100);
       }
+      document.querySelector('.nav-links').classList.remove('active');
     });
+  }
+
+  // Mobile Menu Toggle
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const navLinksContainer = document.querySelector('.nav-links');
+  if (mobileMenuBtn && navLinksContainer) {
+    mobileMenuBtn.addEventListener('click', () => {
+      navLinksContainer.classList.toggle('active');
+    });
+    
+    // Close menu when clicking a link
+    document.getElementById('nav-home').addEventListener('click', () => navLinksContainer.classList.remove('active'));
+    document.getElementById('nav-collections').addEventListener('click', () => navLinksContainer.classList.remove('active'));
   }
 
   document.getElementById('btn-back').addEventListener('click', hideProductDetail);
