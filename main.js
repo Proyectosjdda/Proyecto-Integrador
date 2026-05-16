@@ -440,6 +440,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Logo → go home
+  document.getElementById('logo-home').addEventListener('click', (e) => {
+    e.preventDefault();
+    closeMobileMenu();
+    if (!detailView.classList.contains('hidden')) hideProductDetail();
+    if (!dashboardView.classList.contains('hidden')) {
+      dashboardView.classList.add('hidden');
+      document.getElementById('main-view').classList.remove('hidden');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
   // Navigation
   document.getElementById('nav-home').addEventListener('click', (e) => {
     if (!detailView.classList.contains('hidden')) {
