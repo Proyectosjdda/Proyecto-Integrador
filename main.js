@@ -274,6 +274,17 @@ document.addEventListener('DOMContentLoaded', () => {
   renderProducts();
   updateCartUI();
 
+  // Hero Background Slider
+  const heroBgs = document.querySelectorAll('.hero-bg');
+  let currentBgIndex = 0;
+  if (heroBgs.length > 0) {
+    setInterval(() => {
+      heroBgs[currentBgIndex].classList.remove('active');
+      currentBgIndex = (currentBgIndex + 1) % heroBgs.length;
+      heroBgs[currentBgIndex].classList.add('active');
+    }, 5000);
+  }
+
   // Filters
   const filterBtns = document.querySelectorAll('.filter-btn');
   filterBtns.forEach(btn => {

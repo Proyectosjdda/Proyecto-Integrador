@@ -18,22 +18,24 @@
     <!-- Navbar -->
     <nav class="navbar" id="navbar">
       <div class="nav-container">
-        <div class="nav-links">
-          <a href="#" id="nav-home">Inicio</a>
-          <a href="#collections" id="nav-collections">Colección</a>
+        <div class="logo" style="flex: 1; display: flex; justify-content: flex-start; align-items: center;">
+          <h2 style="font-family: var(--font-serif); font-size: 1.4rem; font-weight: 300; letter-spacing: 4px; color: var(--color-accent); margin: 0;">V A L O U <span style="color: white; font-weight: 200;">NOIR</span></h2>
         </div>
-        <div class="logo">
-          <!-- Added mix-blend-mode via CSS class to make background transparent -->
-          <img src="/valou_logo_1777947078533.png" alt="Valou Logo" class="logo-img">
+        <div class="nav-links" style="flex: 2; display: flex; justify-content: center; gap: 30px;">
+          <a href="#" id="nav-home">INICIO</a>
+          <a href="#collections" id="nav-collections">CATÁLOGO</a>
+          <a href="#collections">EDICIONES LIMITADAS</a>
+          <a href="https://wa.me/573177307192" target="_blank">ASESORÍA</a>
         </div>
-        <div class="nav-icons">
-          <a href="#" id="cart-icon" class="cart-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-            <span class="cart-count" id="cart-count">0</span>
-          </a>
+        <div class="nav-icons" style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 15px;">
           <button id="btn-login-open" class="btn-auth">Entrar</button>
           <button id="btn-logout" class="btn-auth hidden">Salir</button>
           <button id="btn-upload-open" class="btn-auth hidden">+ Prenda</button>
+          <a href="#" id="cart-icon" class="cart-icon" style="position: relative; margin-left: 10px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            <span class="cart-count" id="cart-count" style="background: var(--color-accent); color: #000; font-size: 0.7rem; font-weight: bold; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%; position: absolute; top: -5px; right: -8px;">0</span>
+          </a>
+        </div>
       </div>
     </nav>
 
@@ -41,12 +43,23 @@
     <div id="main-view">
       <!-- Hero Section -->
       <header class="hero" id="home">
-        <img class="hero-bg" src="/valou_logo_1777947078533.png" alt="">
-        <div class="hero-overlay"></div>
+        <div class="hero-bg-slider" id="hero-bg-slider">
+          <img class="hero-bg active" src="hero1.png" alt="Sala de maquinas">
+          <img class="hero-bg" src="hero2.png" alt="Diseño de modas">
+          <img class="hero-bg" src="hero3.png" alt="Haute couture">
+        </div>
+        <div class="hero-overlay" style="background: rgba(0,0,0,0.6);"></div>
         <div class="hero-content" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-perspective="1000">
-          <h1 class="hero-title">Elegance Redefined</h1>
-          <p class="hero-subtitle">The New Collection</p>
-          <a href="#collections" class="btn-primary">Descubrir</a>
+          <p class="hero-overline" style="color: var(--color-accent); letter-spacing: 6px; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 20px;">Haute Couture Colombiana</p>
+          <h1 class="hero-title" style="font-family: var(--font-serif); font-size: 4rem; font-weight: 300; line-height: 1.1; margin-bottom: 25px;">
+            <span style="color: white; display: block;">Elegancia</span>
+            <span style="color: var(--color-accent); display: block;">Atemporal</span>
+          </h1>
+          <p class="hero-subtitle" style="font-family: var(--font-sans); font-size: 1rem; color: #ddd; max-width: 600px; margin: 0 auto 40px auto; line-height: 1.6;">Creamos piezas únicas que combinan artesanía contemporánea con diseño exclusivo. Cada prenda cuenta una historia.</p>
+          <div class="hero-buttons" style="display: flex; gap: 20px; justify-content: center;">
+            <a href="#collections" class="btn-primary" style="background: var(--color-accent); color: #000; border: none; padding: 15px 30px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500;">Ver Catálogo →</a>
+            <a href="#collections" class="btn-secondary" style="background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 15px 30px; letter-spacing: 2px; text-transform: uppercase; font-weight: 400; transition: border-color 0.3s;">Ediciones Limitadas</a>
+          </div>
         </div>
       </header>
 

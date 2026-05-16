@@ -60,13 +60,13 @@ h1, h2, h3, .logo { font-family: var(--font-serif); font-weight: 400; letter-spa
 }
 
 /* Hero Section */
-.hero { height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%); overflow: hidden; }
-.hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.1; filter: blur(5px); mix-blend-mode: screen; z-index: 0; pointer-events: none; }
-.hero-content { text-align: center; z-index: 1; transform-style: preserve-3d; }
-.hero-title { font-size: 5rem; margin-bottom: 10px; background: linear-gradient(to right, #fff, #d4af37); -webkit-background-clip: text; -webkit-text-fill-color: transparent; transform: translateZ(50px); }
-.hero-subtitle { font-size: 1.2rem; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 40px; color: #ccc; transform: translateZ(30px); }
-.btn-primary { display: inline-block; padding: 15px 40px; border: 1px solid var(--color-accent); color: var(--color-accent); text-decoration: none; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; transition: all 0.4s ease; background: transparent; transform: translateZ(20px); cursor: pointer; }
-.btn-primary:hover { background: var(--color-accent); color: var(--color-bg); }
+.hero { height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; background: #000; }
+.hero-bg-slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+.hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.5s ease-in-out; }
+.hero-bg.active { opacity: 0.5; }
+.hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+.hero-content { text-align: center; z-index: 2; transform-style: preserve-3d; position: relative; padding: 0 20px; }
+.btn-secondary:hover { background: rgba(255,255,255,0.1); }
 
 /* Filters */
 .filters { display: flex; justify-content: center; gap: 20px; margin-bottom: 40px; }
