@@ -176,7 +176,16 @@
         <form id="upload-form">
           <input type="text" id="up-name" placeholder="Nombre de la prenda" required />
           <input type="text" id="up-price" placeholder="Precio (ej. $350.000)" required />
-          <input type="text" id="up-image" placeholder="URL de la Imagen" required />
+          
+          <div class="dropzone" id="dropzone">
+            <input type="file" id="up-file" accept="image/*" class="file-input" hidden />
+            <div id="drop-text">
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 10px; color: var(--color-accent);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <p>Arrastra tu foto aquí o <span style="color: var(--color-accent); text-decoration: underline;">haz clic</span></p>
+            </div>
+            <img id="image-preview" class="hidden" alt="Preview" />
+          </div>
+
           <select id="up-collection" required style="width: 100%; padding: 12px; margin-bottom: 15px; background: #111; color: white; border: 1px solid #333; font-family: var(--font-sans);">
             <option value="" disabled selected>Selecciona una Colección</option>
             <option value="allegra">Allegra</option>

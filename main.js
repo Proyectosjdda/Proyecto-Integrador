@@ -1,7 +1,7 @@
-import { auth, db } from './firebaseConfig.js';
+import { auth, db, storage } from './firebaseConfig.js';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 import { collection, onSnapshot, addDoc } from 'firebase/firestore';
-
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const WAPP_NUMBER = "573177307192";
 
 let products = [];
@@ -358,13 +358,71 @@ document.addEventListener('DOMContentLoaded', () => {
     signOut(auth);
   });
 
-  // Upload Modal
+  // Upload Modal and Drag & Drop
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('up-file');
+  const dropText = document.getElementById('drop-text');
+  const imagePreview = document.getElementById('image-preview');
+  let selectedFile = null;
+
   btnUploadOpen.addEventListener('click', () => {
     uploadModal.classList.remove('hidden');
   });
+  
   closeUploadModal.addEventListener('click', () => {
     uploadModal.classList.add('hidden');
+    resetUploadForm();
   });
+
+  function resetUploadForm() {
+    uploadForm.reset();
+    selectedFile = null;
+    imagePreview.classList.add('hidden');
+    imagePreview.src = '';
+    dropText.classList.remove('hidden');
+  }
+
+  // Drag and drop events
+  dropzone.addEventListener('click', () => fileInput.click());
+  
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+  });
+  
+  dropzone.addEventListener('dragleave', () => {
+    dropzone.classList.remove('dragover');
+  });
+  
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFileSelect(e.dataTransfer.files[0]);
+    }
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleFileSelect(e.target.files[0]);
+    }
+  });
+
+  function handleFileSelect(file) {
+    if (!file.type.startsWith('image/')) {
+      uploadError.innerText = 'Por favor selecciona un archivo de imagen válido.';
+      return;
+    }
+    selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imagePreview.src = e.target.result;
+      imagePreview.classList.remove('hidden');
+      dropText.classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+    uploadError.innerText = '';
+  }
 
   uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -375,28 +433,48 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    if (!selectedFile) {
+      uploadError.innerText = 'Por favor, selecciona o arrastra una imagen.';
+      return;
+    }
+
     const name = document.getElementById('up-name').value;
     const price = document.getElementById('up-price').value;
-    const image = document.getElementById('up-image').value;
     const category = document.getElementById('up-collection').value;
     const sizes = document.getElementById('up-sizes').value;
     const description = document.getElementById('up-desc').value;
+    
+    const submitBtn = uploadForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerText;
+    submitBtn.innerText = 'Subiendo foto...';
+    submitBtn.disabled = true;
 
     try {
+      // 1. Upload image to Storage
+      const fileRef = ref(storage, `products/${Date.now()}_${selectedFile.name}`);
+      const uploadResult = await uploadBytes(fileRef, selectedFile);
+      const downloadURL = await getDownloadURL(uploadResult.ref);
+
+      // 2. Save document to Firestore
       await addDoc(collection(db, 'products'), {
         name,
         price,
-        image,
+        image: downloadURL,
         category,
         sizes,
         description,
         author: currentUser.email.split('@')[0],
         createdAt: new Date()
       });
+      
       uploadModal.classList.add('hidden');
-      uploadForm.reset();
+      resetUploadForm();
     } catch (err) {
-      uploadError.innerText = 'Error al subir: Verifica que Firestore esté habilitado.';
+      console.error(err);
+      uploadError.innerText = 'Error al subir: Verifica que Storage esté habilitado en modo prueba.';
+    } finally {
+      submitBtn.innerText = originalText;
+      submitBtn.disabled = false;
     }
   });
 

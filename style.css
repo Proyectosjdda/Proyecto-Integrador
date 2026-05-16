@@ -171,6 +171,12 @@ h1, h2, h3, .logo { font-family: var(--font-serif); font-weight: 400; letter-spa
 .btn-auth { background: transparent; border: 1px solid var(--color-accent); color: var(--color-accent); padding: 5px 15px; border-radius: 4px; cursor: pointer; transition: all 0.3s; font-family: var(--font-sans); font-size: 0.85rem; text-transform: uppercase; margin-left: 15px; }
 .btn-auth:hover { background: var(--color-accent); color: #000; }
 
+/* Dropzone */
+.dropzone { border: 2px dashed #444; border-radius: 8px; padding: 30px 20px; text-align: center; margin-bottom: 15px; cursor: pointer; transition: all 0.3s ease; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(255,255,255,0.02); min-height: 120px; }
+.dropzone.dragover { border-color: var(--color-accent); background: rgba(212, 175, 55, 0.05); }
+.dropzone p { color: #888; font-size: 0.9rem; margin: 0; font-family: var(--font-sans); }
+#image-preview { max-width: 100%; max-height: 150px; border-radius: 5px; object-fit: contain; }
+
 /* Footer */
 .site-footer { background-color: #050505; color: #ccc; padding: 60px 40px 20px; font-family: var(--font-sans); border-top: 1px solid #1a1a1a; margin-top: 60px; }
 .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1.5fr; gap: 40px; margin-bottom: 40px; }
