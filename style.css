@@ -23,6 +23,9 @@ h1, h2, h3, .logo { font-family: var(--font-serif); font-weight: 400; letter-spa
 
 .hidden { display: none !important; }
 
+.btn-primary { display: inline-block; padding: 15px 40px; border: 1px solid var(--color-accent); color: var(--color-accent); text-decoration: none; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; transition: all 0.4s ease; background: transparent; cursor: pointer; text-align: center; font-family: var(--font-sans); }
+.btn-primary:hover { background: var(--color-accent); color: #000; }
+
 /* Navbar */
 .navbar {
   position: fixed; top: 0; width: 100%; padding: 20px 40px; z-index: 1000;

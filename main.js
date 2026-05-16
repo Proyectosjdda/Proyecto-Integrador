@@ -404,8 +404,8 @@ document.addEventListener('DOMContentLoaded', () => {
   closeAuthModal.addEventListener('click', () => {
     authModal.classList.add('hidden');
   });
-  authToggleBtn.addEventListener('click', (e) => {
-    e.preventDefault();
+  function toggleAuthMode(e) {
+    if (e) e.preventDefault();
     isRegisterMode = !isRegisterMode;
     authTitle.innerText = isRegisterMode ? 'Registrarse' : 'Iniciar Sesión';
     authSubmit.innerText = isRegisterMode ? 'Crear Cuenta' : 'Entrar';
@@ -415,20 +415,19 @@ document.addEventListener('DOMContentLoaded', () => {
       authName.setAttribute('required', 'true');
       authCollection.classList.remove('hidden');
       authCollection.setAttribute('required', 'true');
+      document.getElementById('auth-toggle-text').innerHTML = `¿Ya tienes cuenta? <a href="#" id="auth-toggle-btn" style="color: var(--color-accent);">Entrar</a>`;
     } else {
       authName.classList.add('hidden');
       authName.removeAttribute('required');
       authCollection.classList.add('hidden');
       authCollection.removeAttribute('required');
+      document.getElementById('auth-toggle-text').innerHTML = `¿No tienes cuenta? <a href="#" id="auth-toggle-btn" style="color: var(--color-accent);">Regístrate</a>`;
     }
-
-    document.getElementById('auth-toggle-text').innerHTML = isRegisterMode 
-      ? `¿Ya tienes cuenta? <a href="#" id="auth-toggle-btn" style="color: var(--color-accent);">Entrar</a>`
-      : `¿No tienes cuenta? <a href="#" id="auth-toggle-btn" style="color: var(--color-accent);">Regístrate</a>`;
     
-    // Re-bind listener because we replaced innerHTML
-    document.getElementById('auth-toggle-btn').addEventListener('click', arguments.callee);
-  });
+    document.getElementById('auth-toggle-btn').addEventListener('click', toggleAuthMode);
+  }
+
+  authToggleBtn.addEventListener('click', toggleAuthMode);
 
   authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
