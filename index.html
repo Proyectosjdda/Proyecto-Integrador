@@ -29,6 +29,7 @@
         </div>
         <div class="nav-icons" style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 15px;">
           <button id="btn-login-open" class="btn-auth">Entrar</button>
+          <button id="btn-dashboard" class="btn-auth hidden" style="border-color: var(--color-accent); color: var(--color-accent);">Dashboard</button>
           <button id="btn-logout" class="btn-auth hidden">Salir</button>
           <button id="btn-upload-open" class="btn-auth hidden">+ Prenda</button>
           <a href="#" id="cart-icon" class="cart-icon" style="position: relative; margin-left: 10px;">
@@ -93,6 +94,31 @@
         <div class="detail-content" id="detail-content">
           <!-- Detail will be injected via JS -->
         </div>
+      </div>
+    </div>
+
+    <!-- Dashboard View (Hidden by default) -->
+    <div id="dashboard-view" class="hidden" style="padding: 120px 40px 60px; max-width: 1200px; margin: 0 auto; min-height: 100vh;">
+      <h2 style="color: var(--color-accent); margin-bottom: 30px;">Dashboard de Administrador</h2>
+      <button id="btn-dash-back" class="btn-back">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Volver a la Tienda
+      </button>
+      <div style="background: #111; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin-top: 20px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff;">
+          <thead>
+            <tr style="background: #222; border-bottom: 1px solid #333;">
+              <th style="padding: 15px;">Imagen</th>
+              <th style="padding: 15px;">Nombre</th>
+              <th style="padding: 15px;">Autor</th>
+              <th style="padding: 15px;">Colección</th>
+              <th style="padding: 15px;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="dashboard-table-body">
+            <!-- Injected via JS -->
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -175,6 +201,13 @@
         <h2 id="auth-title">Iniciar Sesión</h2>
         <form id="auth-form">
           <input type="text" id="auth-name" placeholder="Nombre del Estudiante" class="hidden" />
+          <select id="auth-collection" class="hidden" style="width: 100%; padding: 12px; margin-bottom: 15px; background: #111; color: white; border: 1px solid #333; font-family: var(--font-sans);">
+            <option value="" disabled selected>Selecciona tu Colección</option>
+            <option value="allegra">Allegra</option>
+            <option value="col2">Colección 2</option>
+            <option value="col3">Colección 3</option>
+            <option value="col4">Colección 4</option>
+          </select>
           <input type="email" id="auth-email" placeholder="Correo electrónico" required />
           <input type="password" id="auth-password" placeholder="Contraseña" required />
           <button type="submit" class="btn-primary" id="auth-submit" style="width: 100%; margin-top: 15px;">Entrar</button>

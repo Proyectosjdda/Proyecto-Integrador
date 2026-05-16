@@ -1,6 +1,6 @@
 import { auth, db, storage } from './firebaseConfig.js';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from 'firebase/auth';
-import { collection, onSnapshot, addDoc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const WAPP_NUMBER = "573177307192";
 
@@ -9,6 +9,9 @@ let cart = [];
 let currentFilter = 'all';
 let currentUser = null;
 let currentProductDetail = null;
+
+const ADMIN_EMAIL = 'cuenta.suscriptores@gmail.com';
+let userProfile = null;
 
 // DOM Elements
 const mainView = document.getElementById('main-view');
@@ -31,6 +34,7 @@ const authForm = document.getElementById('auth-form');
 const authEmail = document.getElementById('auth-email');
 const authPassword = document.getElementById('auth-password');
 const authName = document.getElementById('auth-name');
+const authCollection = document.getElementById('auth-collection');
 const authToggleBtn = document.getElementById('auth-toggle-btn');
 const authTitle = document.getElementById('auth-title');
 const authSubmit = document.getElementById('auth-submit');
@@ -45,16 +49,33 @@ const uploadForm = document.getElementById('upload-form');
 const uploadError = document.getElementById('upload-error');
 
 // --- FIREBASE SYNC ---
-onAuthStateChanged(auth, (user) => {
+// --- FIREBASE SYNC ---
+onAuthStateChanged(auth, async (user) => {
   currentUser = user;
   if (user) {
-    btnLoginOpen.classList.add('hidden');
-    btnLogout.classList.remove('hidden');
-    btnUploadOpen.classList.remove('hidden');
+    document.getElementById('btn-login-open').classList.add('hidden');
+    document.getElementById('btn-logout').classList.remove('hidden');
+    document.getElementById('btn-upload-open').classList.remove('hidden');
+    
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        userProfile = userDoc.data();
+      }
+    } catch(e) { console.error("Error fetching user profile", e); }
+    
+    if (user.email === ADMIN_EMAIL) {
+      document.getElementById('btn-dashboard').classList.remove('hidden');
+    }
   } else {
-    btnLoginOpen.classList.remove('hidden');
-    btnLogout.classList.add('hidden');
-    btnUploadOpen.classList.add('hidden');
+    userProfile = null;
+    document.getElementById('btn-login-open').classList.remove('hidden');
+    document.getElementById('btn-logout').classList.add('hidden');
+    document.getElementById('btn-upload-open').classList.add('hidden');
+    document.getElementById('btn-dashboard').classList.add('hidden');
+    
+    document.getElementById('dashboard-view').classList.add('hidden');
+    document.getElementById('main-view').classList.remove('hidden');
   }
 });
 
@@ -146,6 +167,12 @@ function showProductDetail(product) {
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.129.332.202.043.073.043.423-.101.827zM22.002 12c0-5.514-4.486-10-10-10-5.512 0-10 4.486-10 10 0 1.827.49 3.536 1.349 5.05l-1.35 4.95 5.093-1.33c1.477.781 3.167 1.225 4.935 1.225l.006-.002c5.512 0 10-4.486 10-10zm-10 8.058l-.004.002c-1.554 0-3.075-.417-4.402-1.204l-.316-.188-3.27.854.87-3.188-.206-.328c-.868-1.381-1.325-2.981-1.325-4.606 0-4.409 3.589-8 8-8s8 3.591 8 8-3.589 8-8 8z"/></svg>
             Comprar Ahora por WhatsApp
           </button>
+          ${ (currentUser && (currentUser.uid === product.authorUid || (userProfile && userProfile.role === 'admin'))) ? `
+          <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
+            <button id="btn-edit-product" style="flex: 1; padding: 10px; background: transparent; border: 1px solid #555; color: #fff; cursor: pointer; border-radius: 4px; transition: background 0.3s;">Editar</button>
+            <button id="btn-delete-product" style="flex: 1; padding: 10px; background: #900; border: none; color: #fff; cursor: pointer; border-radius: 4px; transition: background 0.3s;">Eliminar</button>
+          </div>
+          ` : '' }
         </div>
       </div>
     </div>
@@ -175,6 +202,46 @@ function showProductDetail(product) {
     const text = encodeURIComponent(`Hola Valou, quiero pedir el producto: ${product.name} (Talla: ${selectedSize}).`);
     window.open(`https://wa.me/${WAPP_NUMBER}?text=${text}`, '_blank');
   });
+
+  const btnEdit = document.getElementById('btn-edit-product');
+  const btnDelete = document.getElementById('btn-delete-product');
+  
+  if (btnEdit) {
+    btnEdit.addEventListener('click', () => {
+      document.getElementById('up-name').value = product.name;
+      document.getElementById('up-price').value = product.price;
+      document.getElementById('up-authors').value = product.authors || '';
+      document.getElementById('up-materials').value = product.materials || '';
+      document.getElementById('up-collection').value = product.category || 'allegra';
+      document.getElementById('up-sizes').value = product.sizes || '';
+      document.getElementById('up-desc').value = product.description || '';
+      
+      // Store ID for update
+      uploadForm.dataset.editId = product.id;
+      
+      const upCol = document.getElementById('up-collection');
+      if (userProfile && userProfile.role !== 'admin') {
+        upCol.disabled = true;
+      } else {
+        upCol.disabled = false;
+      }
+      
+      uploadModal.classList.remove('hidden');
+    });
+  }
+
+  if (btnDelete) {
+    btnDelete.addEventListener('click', async () => {
+      if(confirm('¿Estás seguro de que deseas eliminar esta prenda?')) {
+        try {
+          await deleteDoc(doc(db, 'products', product.id));
+          hideProductDetail();
+        } catch(e) {
+          alert('Error al eliminar');
+        }
+      }
+    });
+  }
 }
 
 function hideProductDetail() {
@@ -346,9 +413,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isRegisterMode) {
       authName.classList.remove('hidden');
       authName.setAttribute('required', 'true');
+      authCollection.classList.remove('hidden');
+      authCollection.setAttribute('required', 'true');
     } else {
       authName.classList.add('hidden');
       authName.removeAttribute('required');
+      authCollection.classList.add('hidden');
+      authCollection.removeAttribute('required');
     }
 
     document.getElementById('auth-toggle-text').innerHTML = isRegisterMode 
@@ -370,8 +441,18 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isRegisterMode) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(userCredential.user, { displayName: name });
+        
+        // Save to users collection
+        await setDoc(doc(db, 'users', userCredential.user.uid), {
+          email: email,
+          name: name,
+          collection: authCollection.value,
+          role: email === ADMIN_EMAIL ? 'admin' : 'user'
+        });
+
         // Update local currentUser immediately so upload sees it without reload
         currentUser = { ...userCredential.user, displayName: name };
+        userProfile = { email, name, collection: authCollection.value, role: email === ADMIN_EMAIL ? 'admin' : 'user' };
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
@@ -394,6 +475,13 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedFile = null;
 
   btnUploadOpen.addEventListener('click', () => {
+    if (userProfile && userProfile.role !== 'admin') {
+      const upCol = document.getElementById('up-collection');
+      upCol.value = userProfile.collection || 'allegra';
+      upCol.disabled = true;
+    } else {
+      document.getElementById('up-collection').disabled = false;
+    }
     uploadModal.classList.remove('hidden');
   });
   
@@ -405,6 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function resetUploadForm() {
     uploadForm.reset();
     selectedFile = null;
+    delete uploadForm.dataset.editId;
     imagePreview.classList.add('hidden');
     imagePreview.src = '';
     dropText.classList.remove('hidden');
@@ -461,7 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (!selectedFile) {
+    if (!selectedFile && !uploadForm.dataset.editId) {
       uploadError.innerText = 'Por favor, selecciona o arrastra una imagen.';
       return;
     }
@@ -470,7 +559,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const price = document.getElementById('up-price').value;
     const authors = document.getElementById('up-authors').value;
     const materials = document.getElementById('up-materials').value;
-    const category = document.getElementById('up-collection').value;
+    const category = (userProfile && userProfile.role !== 'admin') 
+      ? userProfile.collection || 'allegra' 
+      : document.getElementById('up-collection').value;
     const sizes = document.getElementById('up-sizes').value;
     const description = document.getElementById('up-desc').value;
     
@@ -480,24 +571,41 @@ document.addEventListener('DOMContentLoaded', () => {
     submitBtn.disabled = true;
 
     try {
-      // 1. Upload image to Storage
-      const fileRef = ref(storage, `products/${Date.now()}_${selectedFile.name}`);
-      const uploadResult = await uploadBytes(fileRef, selectedFile);
-      const downloadURL = await getDownloadURL(uploadResult.ref);
+      let downloadURL = null;
+      if (selectedFile) {
+        // Upload image to Storage if a new one was selected
+        const fileRef = ref(storage, `products/${Date.now()}_${selectedFile.name}`);
+        const uploadResult = await uploadBytes(fileRef, selectedFile);
+        downloadURL = await getDownloadURL(uploadResult.ref);
+      }
 
-      // 2. Save document to Firestore
-      await addDoc(collection(db, 'products'), {
-        name,
-        price,
-        authors,
-        materials,
-        image: downloadURL,
-        category,
-        sizes,
-        description,
-        author: currentUser.displayName || currentUser.email.split('@')[0],
-        createdAt: new Date()
-      });
+      const editId = uploadForm.dataset.editId;
+      
+      if (editId) {
+        // Update existing document
+        const updateData = {
+          name, price, authors, materials, category, sizes, description
+        };
+        if (downloadURL) updateData.image = downloadURL;
+        await updateDoc(doc(db, 'products', editId), updateData);
+      } else {
+        // Save new document to Firestore
+        if (!downloadURL) throw new Error("Image required for new upload");
+        await addDoc(collection(db, 'products'), {
+          name,
+          price,
+          authors,
+          materials,
+          image: downloadURL,
+          category,
+          sizes,
+          description,
+          author: currentUser.displayName || currentUser.email.split('@')[0],
+          authorEmail: currentUser.email,
+          authorUid: currentUser.uid,
+          createdAt: new Date()
+        });
+      }
       
       uploadModal.classList.add('hidden');
       resetUploadForm();
@@ -510,7 +618,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Back to Top
   window.addEventListener('scroll', () => {
     if (window.scrollY > 500) {
       btnTop.classList.remove('hidden');
@@ -522,7 +629,45 @@ document.addEventListener('DOMContentLoaded', () => {
   btnTop.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+  
+  // Dashboard Logic
+  btnDashboard.addEventListener('click', () => {
+    document.getElementById('main-view').classList.add('hidden');
+    document.getElementById('detail-view').classList.add('hidden');
+    dashboardView.classList.remove('hidden');
+    renderDashboard();
+  });
+  
+  btnDashBack.addEventListener('click', () => {
+    dashboardView.classList.add('hidden');
+    document.getElementById('main-view').classList.remove('hidden');
+  });
 });
+
+function renderDashboard() {
+  dashboardTableBody.innerHTML = products.map(product => `
+    <tr style="border-bottom: 1px solid #333;">
+      <td style="padding: 15px;"><img src="${product.image}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"></td>
+      <td style="padding: 15px;">${product.name}</td>
+      <td style="padding: 15px;">${product.author || 'Anónimo'} <br><small style="color: #888;">${product.authorEmail || ''}</small></td>
+      <td style="padding: 15px; text-transform: capitalize;">${product.category}</td>
+      <td style="padding: 15px;">
+        <button onclick="deleteProductFromDash('${product.id}')" style="background: #900; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;">Eliminar</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+window.deleteProductFromDash = async function(id) {
+  if(confirm('¿Seguro que deseas eliminar esta prenda desde el dashboard?')) {
+    try {
+      await deleteDoc(doc(db, 'products', id));
+      renderDashboard(); // Re-render table since snapshot will update products array
+    } catch(e) {
+      alert('Error al eliminar');
+    }
+  }
+};
 
 function setup3DTilt() {
   if (!window.matchMedia("(hover: hover)").matches) return;
