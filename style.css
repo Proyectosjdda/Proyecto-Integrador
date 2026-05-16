@@ -158,6 +158,23 @@ h1, h2, h3, .logo { font-family: var(--font-serif); font-weight: 400; letter-spa
 .whatsapp-float { position: fixed; bottom: 40px; right: 40px; background-color: #25d366; color: #FFF; border-radius: 50px; text-align: center; font-size: 30px; box-shadow: 0px 4px 20px rgba(37, 211, 102, 0.4); z-index: 999; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; animation: pulse 2s infinite; transition: transform 0.3s ease; }
 .whatsapp-float:hover { transform: scale(1.1); }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
+/* Footer */
+.site-footer { background-color: #050505; color: #ccc; padding: 60px 40px 20px; font-family: var(--font-sans); border-top: 1px solid #1a1a1a; margin-top: 60px; }
+.footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1.5fr; gap: 40px; margin-bottom: 40px; }
+.footer-brand { font-family: var(--font-serif); font-size: 1.5rem; letter-spacing: 5px; color: var(--color-accent); margin-bottom: 15px; font-weight: 400; }
+.footer-desc { font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; color: #999; max-width: 90%; }
+.footer-socials { display: flex; gap: 15px; }
+.social-link { display: flex; justify-content: center; align-items: center; width: 40px; height: 40px; border: 1px solid #333; color: var(--color-accent); border-radius: 4px; transition: all 0.3s; }
+.social-link:hover { background: var(--color-accent); color: #000; border-color: var(--color-accent); }
+.footer-heading { font-family: var(--font-sans); font-size: 1rem; letter-spacing: 2px; color: #fff; margin-bottom: 20px; font-weight: 500; text-transform: uppercase; }
+.footer-links { list-style: none; }
+.footer-links li { margin-bottom: 12px; }
+.footer-links a { color: #999; text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
+.footer-links a:hover { color: var(--color-accent); }
+.footer-contact { list-style: none; }
+.footer-contact li { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 15px; font-size: 0.9rem; color: #999; line-height: 1.4; }
+.footer-contact svg { flex-shrink: 0; margin-top: 2px; }
+.footer-bottom { border-top: 1px solid #222; padding-top: 20px; text-align: center; font-size: 0.8rem; color: #666; max-width: 1200px; margin: 0 auto; letter-spacing: 1px; }
 
 @media (max-width: 768px) {
   .hero-title { font-size: 2.5rem; }
@@ -173,4 +190,5 @@ h1, h2, h3, .logo { font-family: var(--font-serif); font-weight: 400; letter-spa
   .btn-top { bottom: 90px; right: 20px; width: 45px; height: 45px; }
   .detail-grid { grid-template-columns: 1fr; gap: 30px; }
   #detail-view { padding-top: 100px; }
+  .footer-content { grid-template-columns: 1fr; gap: 40px; }
 }
