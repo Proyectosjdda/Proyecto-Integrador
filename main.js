@@ -476,14 +476,32 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mobile Menu Toggle
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
   const navLinksContainer = document.querySelector('.nav-links');
+
+  function closeMobileMenu() {
+    if (navLinksContainer) navLinksContainer.classList.remove('active');
+  }
+
   if (mobileMenuBtn && navLinksContainer) {
-    mobileMenuBtn.addEventListener('click', () => {
+    mobileMenuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       navLinksContainer.classList.toggle('active');
     });
-    
-    // Close menu when clicking a link
-    document.getElementById('nav-home').addEventListener('click', () => navLinksContainer.classList.remove('active'));
-    document.getElementById('nav-collections').addEventListener('click', () => navLinksContainer.classList.remove('active'));
+
+    // Close on any nav link click
+    navLinksContainer.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
+
+    // Close when clicking outside the navbar
+    document.addEventListener('click', (e) => {
+      const navbar = document.getElementById('navbar');
+      if (!navbar.contains(e.target)) {
+        closeMobileMenu();
+      }
+    });
+
+    // Close when scrolling
+    window.addEventListener('scroll', closeMobileMenu, { passive: true });
   }
 
   document.getElementById('btn-back').addEventListener('click', hideProductDetail);
