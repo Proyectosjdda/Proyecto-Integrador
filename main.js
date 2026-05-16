@@ -1,11 +1,12 @@
 import { auth, db, storage } from './firebaseConfig.js';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from 'firebase/auth';
-import { collection, onSnapshot, addDoc, doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, doc, setDoc, getDoc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const WAPP_NUMBER = "573177307192";
 
 let products = [];
 let cart = [];
+let auditLogs = [];
 let currentFilter = 'all';
 let currentUser = null;
 let currentProductDetail = null;
@@ -27,6 +28,7 @@ const btnTop = document.getElementById('btn-top');
 const btnDashboard = document.getElementById('btn-dashboard');
 const dashboardView = document.getElementById('dashboard-view');
 const dashboardTableBody = document.querySelector('#dashboard-view table tbody');
+const auditTableBody = document.getElementById('audit-table-body');
 const btnDashBack = document.getElementById('btn-dash-back');
 
 // Auth DOM
@@ -95,6 +97,31 @@ onSnapshot(collection(db, 'products'), (snapshot) => {
   renderProducts();
 });
 
+// Fetch audit logs
+onSnapshot(query(collection(db, 'audit_logs'), orderBy('timestamp', 'desc')), (snapshot) => {
+  auditLogs = [];
+  snapshot.forEach((doc) => {
+    auditLogs.push({ id: doc.id, ...doc.data() });
+  });
+  renderDashboard(); // Re-render dashboard if it's open
+});
+
+// Audit Logger
+async function logAudit(action, productName) {
+  if (!currentUser) return;
+  try {
+    await addDoc(collection(db, 'audit_logs'), {
+      action,
+      productName,
+      userEmail: currentUser.email,
+      userName: currentUser.displayName || currentUser.email.split('@')[0],
+      timestamp: new Date()
+    });
+  } catch (err) {
+    console.error("Error logging audit:", err);
+  }
+}
+
 // --- RENDERING ---
 
 function renderProducts() {
@@ -155,6 +182,7 @@ function renderProducts() {
           e.stopPropagation();
           if(confirm('¿Estás seguro de que deseas eliminar esta prenda?')) {
             try {
+              await logAudit('Eliminar', product.name);
               await deleteDoc(doc(db, 'products', product.id));
             } catch(err) {
               alert('Error al eliminar');
@@ -652,6 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         if (downloadURL) updateData.image = downloadURL;
         await updateDoc(doc(db, 'products', editId), updateData);
+        await logAudit('Editar', name);
       } else {
         // Save new document to Firestore
         if (!downloadURL) throw new Error("Image required for new upload");
@@ -669,6 +698,7 @@ document.addEventListener('DOMContentLoaded', () => {
           authorUid: currentUser.uid,
           createdAt: new Date()
         });
+        await logAudit('Crear', name);
       }
       
       uploadModal.classList.add('hidden');
@@ -716,15 +746,37 @@ function renderDashboard() {
       <td style="padding: 15px;">${product.author || 'Anónimo'} <br><small style="color: #888;">${product.authorEmail || ''}</small></td>
       <td style="padding: 15px; text-transform: capitalize;">${product.category}</td>
       <td style="padding: 15px;">
-        <button onclick="deleteProductFromDash('${product.id}')" style="background: #900; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;">Eliminar</button>
+        <button onclick="deleteProductFromDash('${product.id}', '${product.name.replace(/'/g, "\\'")}')" style="background: #900; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;">Eliminar</button>
       </td>
     </tr>
   `).join('');
+
+  if (auditTableBody) {
+    auditTableBody.innerHTML = auditLogs.map(log => {
+      const date = log.timestamp && log.timestamp.toDate ? log.timestamp.toDate() : new Date();
+      const formattedDate = date.toLocaleString('es-CO');
+      
+      let actionColor = '#fff';
+      if (log.action === 'Crear') actionColor = '#25D366';
+      if (log.action === 'Editar') actionColor = 'var(--color-accent)';
+      if (log.action === 'Eliminar') actionColor = '#ff4444';
+
+      return `
+        <tr style="border-bottom: 1px solid #333;">
+          <td style="padding: 15px; color: #aaa;">${formattedDate}</td>
+          <td style="padding: 15px; font-weight: bold; color: ${actionColor};">${log.action}</td>
+          <td style="padding: 15px;">${log.productName}</td>
+          <td style="padding: 15px;">${log.userName || 'Usuario'} <br><small style="color: #888;">${log.userEmail}</small></td>
+        </tr>
+      `;
+    }).join('');
+  }
 }
 
-window.deleteProductFromDash = async function(id) {
+window.deleteProductFromDash = async function(id, name) {
   if(confirm('¿Seguro que deseas eliminar esta prenda desde el dashboard?')) {
     try {
+      await logAudit('Eliminar', name);
       await deleteDoc(doc(db, 'products', id));
       renderDashboard(); // Re-render table since snapshot will update products array
     } catch(e) {
