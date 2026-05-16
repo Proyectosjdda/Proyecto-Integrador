@@ -81,6 +81,9 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('dashboard-view').classList.add('hidden');
     document.getElementById('main-view').classList.remove('hidden');
   }
+  
+  // Re-render products to show/hide edit icons
+  renderProducts();
 });
 
 // Fetch products from Firestore
@@ -111,9 +114,22 @@ function renderProducts() {
       card.setAttribute('data-tilt-max', '10');
     }
     
+    // Check if user owns the product or is admin
+    const canEdit = currentUser && (currentUser.uid === product.authorUid || (userProfile && userProfile.role === 'admin') || currentUser.email === ADMIN_EMAIL);
+    
     card.innerHTML = `
       <div class="product-image-container">
         <img src="${product.image}" alt="${product.name}" class="product-image">
+        ${canEdit ? `
+        <div class="card-actions">
+          <button class="btn-card-edit" title="Editar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          </button>
+          <button class="btn-card-delete" title="Eliminar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          </button>
+        </div>
+        ` : ''}
       </div>
       <div class="product-info">
         <h3 class="product-name">${product.name}</h3>
@@ -122,10 +138,57 @@ function renderProducts() {
     `;
     
     card.addEventListener('click', () => showProductDetail(product));
+
+    if (canEdit) {
+      const editBtn = card.querySelector('.btn-card-edit');
+      const deleteBtn = card.querySelector('.btn-card-delete');
+      
+      if (editBtn) {
+        editBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openEditModal(product);
+        });
+      }
+      
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if(confirm('¿Estás seguro de que deseas eliminar esta prenda?')) {
+            try {
+              await deleteDoc(doc(db, 'products', product.id));
+            } catch(err) {
+              alert('Error al eliminar');
+            }
+          }
+        });
+      }
+    }
+
     grid.appendChild(card);
   });
   
   setup3DTilt();
+}
+
+function openEditModal(product) {
+  document.getElementById('up-name').value = product.name;
+  document.getElementById('up-price').value = product.price;
+  document.getElementById('up-authors').value = product.authors || '';
+  document.getElementById('up-materials').value = product.materials || '';
+  document.getElementById('up-collection').value = product.category || 'allegra';
+  document.getElementById('up-sizes').value = product.sizes || '';
+  document.getElementById('up-desc').value = product.description || '';
+  
+  uploadForm.dataset.editId = product.id;
+  
+  const upCol = document.getElementById('up-collection');
+  if (userProfile && userProfile.role !== 'admin' && currentUser?.email !== ADMIN_EMAIL) {
+    upCol.disabled = true;
+  } else {
+    upCol.disabled = false;
+  }
+  
+  uploadModal.classList.remove('hidden');
 }
 
 function showProductDetail(product) {
@@ -212,25 +275,7 @@ function showProductDetail(product) {
   
   if (btnEdit) {
     btnEdit.addEventListener('click', () => {
-      document.getElementById('up-name').value = product.name;
-      document.getElementById('up-price').value = product.price;
-      document.getElementById('up-authors').value = product.authors || '';
-      document.getElementById('up-materials').value = product.materials || '';
-      document.getElementById('up-collection').value = product.category || 'allegra';
-      document.getElementById('up-sizes').value = product.sizes || '';
-      document.getElementById('up-desc').value = product.description || '';
-      
-      // Store ID for update
-      uploadForm.dataset.editId = product.id;
-      
-      const upCol = document.getElementById('up-collection');
-      if (userProfile && userProfile.role !== 'admin') {
-        upCol.disabled = true;
-      } else {
-        upCol.disabled = false;
-      }
-      
-      uploadModal.classList.remove('hidden');
+      openEditModal(product);
     });
   }
 
