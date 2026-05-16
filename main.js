@@ -1,47 +1,13 @@
+import { auth, db } from './firebaseConfig.js';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
+import { collection, onSnapshot, addDoc } from 'firebase/firestore';
+
 const WAPP_NUMBER = "573177307192";
 
-// Products Data
-const products = [
-  {
-    id: 1,
-    name: "Conjunto Haute Couture Borgoña",
-    category: "nina",
-    price: "$2,500",
-    image: "./conjunto_borgona.jpg",
-    sizes: ["8", "10", "12"],
-    author: "Valentina Sierra Perez",
-    description: "Diseñado para ocasiones muy especiales como visitas a galerías de arte o reuniones familiares exclusivas. Este majestuoso conjunto fusiona la elegancia clásica con una paleta de colores sofisticada en borgoña, negro, blanco y gris.",
-    materials: "Chaqueta estructurada en Scuba Luxury negro y borgoña, con encaje blanco y detalles de Faux Fur (ecopiel) en puños y cuello. Falda de gran vuelo confeccionada en seda Mikado y Jacquard, con acentos de encaje negro. Forro interior de punto de viscosa extrasuave.",
-    history: "La matriz de este diseño de alta moda nace de la fusión de texturas premium. Cada capa de la falda y la estructura de la chaqueta fueron seleccionadas meticulosamente (Scuba, Mikado, Jacquard) para garantizar un aspecto de lujo absoluto y comodidad inigualable."
-  },
-  {
-    id: 2,
-    name: "Traje Sastre Moderno",
-    category: "nino",
-    price: "$1,850",
-    image: "./premium_suit_1777947112656.png",
-    sizes: ["8", "10", "12"],
-    author: "Valou Design Team",
-    description: "Un traje a medida meticulosamente confeccionado. Perfecto para ceremonias y eventos donde el porte es imprescindible.",
-    materials: "Lana virgen fría 120s, Forro de cupro transpirable.",
-    history: "Nacido de la necesidad de ofrecer sastrería tradicional europea adaptada al dinamismo y confort que requieren los niños."
-  },
-  {
-    id: 3,
-    name: "Blusa Couture Champagne",
-    category: "nina",
-    price: "$850",
-    image: "./premium_blouse_1777947132769.png",
-    sizes: ["8", "10", "12"],
-    author: "Valou Design Team",
-    description: "Blusa minimalista con un tono champagne deslumbrante. El corte moderno la hace versátil tanto para faldas de tul como pantalones de vestir.",
-    materials: "Seda charmeuse, Botones de nácar natural.",
-    history: "Una pieza atemporal. Su diseño fue finalizado tras meses de buscar el tono dorado perfecto que reflejara la luz del atardecer."
-  }
-];
-
+let products = [];
 let cart = [];
 let currentFilter = 'all';
+let currentUser = null;
 let currentProductDetail = null;
 
 // DOM Elements
@@ -56,12 +22,61 @@ const cartCount = document.getElementById('cart-count');
 const btnCheckoutCart = document.getElementById('btn-checkout-cart');
 const btnTop = document.getElementById('btn-top');
 
+// Auth DOM
+const authModal = document.getElementById('auth-modal');
+const closeAuthModal = document.getElementById('close-auth-modal');
+const btnLoginOpen = document.getElementById('btn-login-open');
+const btnLogout = document.getElementById('btn-logout');
+const authForm = document.getElementById('auth-form');
+const authEmail = document.getElementById('auth-email');
+const authPassword = document.getElementById('auth-password');
+const authToggleBtn = document.getElementById('auth-toggle-btn');
+const authTitle = document.getElementById('auth-title');
+const authSubmit = document.getElementById('auth-submit');
+const authError = document.getElementById('auth-error');
+let isRegisterMode = false;
+
+// Upload DOM
+const uploadModal = document.getElementById('upload-modal');
+const closeUploadModal = document.getElementById('close-upload-modal');
+const btnUploadOpen = document.getElementById('btn-upload-open');
+const uploadForm = document.getElementById('upload-form');
+const uploadError = document.getElementById('upload-error');
+
+// --- FIREBASE SYNC ---
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+  if (user) {
+    btnLoginOpen.classList.add('hidden');
+    btnLogout.classList.remove('hidden');
+    btnUploadOpen.classList.remove('hidden');
+  } else {
+    btnLoginOpen.classList.remove('hidden');
+    btnLogout.classList.add('hidden');
+    btnUploadOpen.classList.add('hidden');
+  }
+});
+
+// Fetch products from Firestore
+onSnapshot(collection(db, 'products'), (snapshot) => {
+  products = [];
+  snapshot.forEach((doc) => {
+    products.push({ id: doc.id, ...doc.data() });
+  });
+  renderProducts();
+});
+
 // --- RENDERING ---
 
 function renderProducts() {
   grid.innerHTML = '';
   const filtered = currentFilter === 'all' ? products : products.filter(p => p.category === currentFilter);
   
+  if (filtered.length === 0) {
+    grid.innerHTML = '<p style="color: #888; text-align: center; grid-column: 1/-1;">No hay prendas en esta colección aún.</p>';
+    return;
+  }
+
   filtered.forEach(product => {
     const card = document.createElement('div');
     card.className = 'product-card';
@@ -93,7 +108,11 @@ function showProductDetail(product) {
   detailView.classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'instant' });
 
-  const sizesHtml = product.sizes.map(size => 
+  let sizesArr = [];
+  if (Array.isArray(product.sizes)) sizesArr = product.sizes;
+  else if (typeof product.sizes === 'string') sizesArr = product.sizes.split(',').map(s=>s.trim());
+
+  const sizesHtml = sizesArr.map(size => 
     `<button class="size-btn detail-size-btn" data-size="${size}">${size}</button>`
   ).join('');
 
@@ -109,9 +128,8 @@ function showProductDetail(product) {
         <p class="detail-desc">${product.description}</p>
         
         <div class="detail-meta">
-          <p><strong>Materiales:</strong> ${product.materials}</p>
-          <p><strong>Historia:</strong> ${product.history}</p>
-          <p><strong>Hecho por:</strong> ${product.author}</p>
+          <p><strong>Colección:</strong> <span style="text-transform: capitalize;">${product.category}</span></p>
+          <p><strong>Vendedor:</strong> ${product.author || 'Usuario'}</p>
         </div>
 
         <div style="margin-bottom: 10px;"><strong>Selecciona una Talla:</strong></div>
@@ -130,7 +148,6 @@ function showProductDetail(product) {
     </div>
   `;
 
-  // Size selection logic
   let selectedSize = null;
   const sizeBtns = document.querySelectorAll('.detail-size-btn');
   const btnAddCart = document.getElementById('btn-add-cart');
@@ -164,7 +181,6 @@ function hideProductDetail() {
 }
 
 // --- CART LOGIC ---
-
 function addToCart(product, size) {
   const existing = cart.find(i => i.id === product.id && i.size === size);
   if (existing) {
@@ -209,7 +225,7 @@ function updateCartUI() {
     <div class="cart-item">
       <img src="${item.image}" alt="${item.name}">
       <div class="cart-item-info">
-        <p class="cart-item-brand">CLEMONT.CO</p>
+        <p class="cart-item-brand">VALOU</p>
         <h4 class="cart-item-title">${item.name}</h4>
         <p class="cart-item-price">${item.price}</p>
         <p class="cart-item-meta">${item.size}</p>
@@ -236,7 +252,6 @@ function updateQty(index, delta) {
   updateCartUI();
 }
 
-// Global scope for onclick
 window.removeFromCart = removeFromCart;
 window.updateQty = updateQty;
 
@@ -250,17 +265,7 @@ function closeCart() {
   cartDrawer.classList.remove('open');
 }
 
-btnCheckoutCart.addEventListener('click', () => {
-  let orderText = "Hola Valou, quiero hacer el siguiente pedido:\n\n";
-  cart.forEach(item => {
-    orderText += `- ${item.name} (Talla: ${item.size}) x${item.qty}\n`;
-  });
-  window.open(`https://wa.me/${WAPP_NUMBER}?text=${encodeURIComponent(orderText)}`, '_blank');
-});
-
-
-// --- INITIALIZATION & EVENTS ---
-
+// --- EVENT LISTENERS ---
 document.addEventListener('DOMContentLoaded', () => {
   renderProducts();
   updateCartUI();
@@ -294,15 +299,108 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btn-back').addEventListener('click', hideProductDetail);
 
-  // Cart toggles
+  // Cart
   document.getElementById('cart-icon').addEventListener('click', (e) => {
     e.preventDefault();
     openCart();
   });
   document.getElementById('close-cart').addEventListener('click', closeCart);
   cartOverlay.addEventListener('click', closeCart);
+  
+  btnCheckoutCart.addEventListener('click', () => {
+    let orderText = "Hola Valou, quiero hacer el siguiente pedido:\n\n";
+    cart.forEach(item => {
+      orderText += `- ${item.name} (Talla: ${item.size}) x${item.qty}\n`;
+    });
+    window.open(`https://wa.me/${WAPP_NUMBER}?text=${encodeURIComponent(orderText)}`, '_blank');
+  });
 
-  // Back to Top Button
+  // Auth Modal
+  btnLoginOpen.addEventListener('click', () => {
+    authModal.classList.remove('hidden');
+  });
+  closeAuthModal.addEventListener('click', () => {
+    authModal.classList.add('hidden');
+  });
+  authToggleBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    isRegisterMode = !isRegisterMode;
+    authTitle.innerText = isRegisterMode ? 'Registrarse' : 'Iniciar Sesión';
+    authSubmit.innerText = isRegisterMode ? 'Crear Cuenta' : 'Entrar';
+    document.getElementById('auth-toggle-text').innerHTML = isRegisterMode 
+      ? `¿Ya tienes cuenta? <a href="#" id="auth-toggle-btn" style="color: var(--color-accent);">Entrar</a>`
+      : `¿No tienes cuenta? <a href="#" id="auth-toggle-btn" style="color: var(--color-accent);">Regístrate</a>`;
+    
+    // Re-bind listener because we replaced innerHTML
+    document.getElementById('auth-toggle-btn').addEventListener('click', arguments.callee);
+  });
+
+  authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = authEmail.value;
+    const password = authPassword.value;
+    authError.innerText = '';
+    
+    try {
+      if (isRegisterMode) {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
+      authModal.classList.add('hidden');
+      authForm.reset();
+    } catch (err) {
+      authError.innerText = 'Error: No se pudo completar la acción. Verifica si tienes Auth habilitado en Firebase.';
+    }
+  });
+
+  btnLogout.addEventListener('click', () => {
+    signOut(auth);
+  });
+
+  // Upload Modal
+  btnUploadOpen.addEventListener('click', () => {
+    uploadModal.classList.remove('hidden');
+  });
+  closeUploadModal.addEventListener('click', () => {
+    uploadModal.classList.add('hidden');
+  });
+
+  uploadForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    uploadError.innerText = '';
+    
+    if (!currentUser) {
+      uploadError.innerText = 'Debes iniciar sesión para subir una prenda.';
+      return;
+    }
+
+    const name = document.getElementById('up-name').value;
+    const price = document.getElementById('up-price').value;
+    const image = document.getElementById('up-image').value;
+    const category = document.getElementById('up-collection').value;
+    const sizes = document.getElementById('up-sizes').value;
+    const description = document.getElementById('up-desc').value;
+
+    try {
+      await addDoc(collection(db, 'products'), {
+        name,
+        price,
+        image,
+        category,
+        sizes,
+        description,
+        author: currentUser.email.split('@')[0],
+        createdAt: new Date()
+      });
+      uploadModal.classList.add('hidden');
+      uploadForm.reset();
+    } catch (err) {
+      uploadError.innerText = 'Error al subir: Verifica que Firestore esté habilitado.';
+    }
+  });
+
+  // Back to Top
   window.addEventListener('scroll', () => {
     if (window.scrollY > 500) {
       btnTop.classList.remove('hidden');
@@ -316,7 +414,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// Vanilla JS 3D Tilt Effect
 function setup3DTilt() {
   if (!window.matchMedia("(hover: hover)").matches) return;
   const elements = document.querySelectorAll('[data-tilt]');
