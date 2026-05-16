@@ -24,6 +24,10 @@ const cartItemsContainer = document.getElementById('cart-items');
 const cartCount = document.getElementById('cart-count');
 const btnCheckoutCart = document.getElementById('btn-checkout-cart');
 const btnTop = document.getElementById('btn-top');
+const btnDashboard = document.getElementById('btn-dashboard');
+const dashboardView = document.getElementById('dashboard-view');
+const dashboardTableBody = document.querySelector('#dashboard-view table tbody');
+const btnDashBack = document.getElementById('btn-dash-back');
 
 // Auth DOM
 const authModal = document.getElementById('auth-modal');
@@ -378,6 +382,22 @@ document.addEventListener('DOMContentLoaded', () => {
       hideProductDetail();
     }
   });
+
+  // Asesoria Nav click
+  const navAsesoria = document.getElementById('nav-asesoria');
+  if (navAsesoria) {
+    navAsesoria.addEventListener('click', (e) => {
+      if (!detailView.classList.contains('hidden') || !dashboardView.classList.contains('hidden')) {
+        e.preventDefault();
+        hideProductDetail();
+        document.getElementById('main-view').classList.remove('hidden');
+        dashboardView.classList.add('hidden');
+        setTimeout(() => {
+          document.getElementById('asesoria').scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    });
+  }
 
   document.getElementById('btn-back').addEventListener('click', hideProductDetail);
 
