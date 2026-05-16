@@ -228,19 +228,20 @@ function updateCartUI() {
     <div class="cart-item">
       <img src="${item.image}" alt="${item.name}">
       <div class="cart-item-info">
-        <p class="cart-item-brand">VALOU</p>
         <h4 class="cart-item-title">${item.name}</h4>
+        <p class="cart-item-meta">Talla: ${item.size}</p>
         <p class="cart-item-price">${item.price}</p>
-        <p class="cart-item-meta">${item.size}</p>
         <div class="cart-item-actions">
           <div class="qty-selector">
             <button class="qty-btn" onclick="updateQty(${index}, -1)">−</button>
             <span class="qty-val">${item.qty}</span>
             <button class="qty-btn" onclick="updateQty(${index}, 1)">+</button>
           </div>
-          <button class="cart-item-remove" onclick="removeFromCart(${index})">Quitar</button>
         </div>
       </div>
+      <button class="cart-item-remove" onclick="removeFromCart(${index})">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+      </button>
     </div>
   `).join('');
 }
