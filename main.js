@@ -14,6 +14,16 @@ let currentProductDetail = null;
 const ADMIN_EMAIL = 'cuenta.suscriptores@gmail.com';
 let userProfile = null;
 
+function getCollectionDisplayName(category) {
+  const mapping = {
+    'allegra': 'Allegra (E-241)',
+    'col2': 'Mila (Grupo B242)',
+    'col3': 'Closet de Antonella (Grupo B241)',
+    'col4': 'Nostalgia del arte (Grupo B-243)'
+  };
+  return mapping[category] || category;
+}
+
 // DOM Elements
 const mainView = document.getElementById('main-view');
 const detailView = document.getElementById('detail-view');
@@ -245,7 +255,7 @@ function showProductDetail(product) {
         <p class="detail-desc">${product.description}</p>
         
         <div class="detail-meta">
-          <p><strong>Colección:</strong> <span style="text-transform: capitalize;">${product.category}</span></p>
+          <p><strong>Colección:</strong> <span>${getCollectionDisplayName(product.category)}</span></p>
           <p><strong>Vendedor:</strong> ${product.author || 'Usuario'}</p>
           ${product.authors ? `<p><strong>Autores:</strong> ${product.authors}</p>` : ''}
           ${product.materials ? `<p><strong>Materiales:</strong> ${product.materials}</p>` : ''}
@@ -434,8 +444,8 @@ document.addEventListener('DOMContentLoaded', () => {
   filterBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
       filterBtns.forEach(b => b.classList.remove('active'));
-      e.target.classList.add('active');
-      currentFilter = e.target.getAttribute('data-filter');
+      btn.classList.add('active');
+      currentFilter = btn.getAttribute('data-filter');
       renderProducts();
     });
   });
@@ -788,7 +798,7 @@ function renderDashboard() {
       <td style="padding: 15px;"><img src="${product.image}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"></td>
       <td style="padding: 15px;">${product.name}</td>
       <td style="padding: 15px;">${product.author || 'Anónimo'} <br><small style="color: #888;">${product.authorEmail || ''}</small></td>
-      <td style="padding: 15px; text-transform: capitalize;">${product.category}</td>
+      <td style="padding: 15px;">${getCollectionDisplayName(product.category)}</td>
       <td style="padding: 15px;">
         <button onclick="deleteProductFromDash('${product.id}', '${product.name.replace(/'/g, "\\'")}')" style="background: #900; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;">Eliminar</button>
       </td>

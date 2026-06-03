@@ -99,11 +99,25 @@
         
         <!-- Filters -->
         <div class="filters">
-          <button class="filter-btn active" data-filter="all">Todos</button>
-          <button class="filter-btn" data-filter="allegra">Allegra</button>
-          <button class="filter-btn" data-filter="col2">Colección 2</button>
-          <button class="filter-btn" data-filter="col3">Colección 3</button>
-          <button class="filter-btn" data-filter="col4">Colección 4</button>
+          <button class="filter-btn active" data-filter="all">
+            <span class="filter-title">Todos</span>
+          </button>
+          <button class="filter-btn" data-filter="allegra">
+            <span class="filter-title">Allegra</span>
+            <span class="filter-subtitle">E-241</span>
+          </button>
+          <button class="filter-btn" data-filter="col2">
+            <span class="filter-title">Mila</span>
+            <span class="filter-subtitle">grupo B242</span>
+          </button>
+          <button class="filter-btn" data-filter="col3">
+            <span class="filter-title">Closet de Antonella</span>
+            <span class="filter-subtitle">grupo B241</span>
+          </button>
+          <button class="filter-btn" data-filter="col4">
+            <span class="filter-title">Nostalgia del arte</span>
+            <span class="filter-subtitle">grupo B-243</span>
+          </button>
         </div>
 
         <div class="grid-container" id="product-grid">
@@ -256,10 +270,10 @@
           <input type="text" id="auth-name" placeholder="Nombre del Estudiante" class="hidden" />
           <select id="auth-collection" class="hidden" style="width: 100%; padding: 12px; margin-bottom: 15px; background: #111; color: white; border: 1px solid #333; font-family: var(--font-sans);">
             <option value="" disabled selected>Selecciona tu Colección</option>
-            <option value="allegra">Allegra</option>
-            <option value="col2">Colección 2</option>
-            <option value="col3">Colección 3</option>
-            <option value="col4">Colección 4</option>
+            <option value="allegra">Allegra (E-241)</option>
+            <option value="col2">Mila (Grupo B242)</option>
+            <option value="col3">Closet de Antonella (Grupo B241)</option>
+            <option value="col4">Nostalgia del arte (Grupo B-243)</option>
           </select>
           <input type="email" id="auth-email" placeholder="Correo electrónico" required />
           <input type="password" id="auth-password" placeholder="Contraseña" required />
@@ -292,10 +306,10 @@
 
           <select id="up-collection" required style="width: 100%; padding: 12px; margin-bottom: 15px; background: #111; color: white; border: 1px solid #333; font-family: var(--font-sans);">
             <option value="" disabled selected>Selecciona una Colección</option>
-            <option value="allegra">Allegra</option>
-            <option value="col2">Colección 2</option>
-            <option value="col3">Colección 3</option>
-            <option value="col4">Colección 4</option>
+            <option value="allegra">Allegra (E-241)</option>
+            <option value="col2">Mila (Grupo B242)</option>
+            <option value="col3">Closet de Antonella (Grupo B241)</option>
+            <option value="col4">Nostalgia del arte (Grupo B-243)</option>
           </select>
           <input type="text" id="up-sizes" placeholder="Tallas (ej. S, M, L)" required />
           <textarea id="up-desc" placeholder="Descripción breve" required style="width: 100%; padding: 12px; margin-bottom: 15px; background: transparent; color: white; border: 1px solid #333; font-family: var(--font-sans);"></textarea>

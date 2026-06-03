@@ -89,8 +89,10 @@ h1, h2, h3, .logo { font-family: var(--font-serif); font-weight: 400; letter-spa
 
 /* Filters */
 .filters { display: flex; justify-content: center; gap: 20px; margin-bottom: 40px; }
-.filter-btn { background: transparent; border: 1px solid #333; color: #888; padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: all 0.3s; font-family: var(--font-sans); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+.filter-btn { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; background: transparent; border: 1px solid #333; color: #888; padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: all 0.3s; font-family: var(--font-sans); line-height: 1.2; }
 .filter-btn:hover, .filter-btn.active { border-color: var(--color-accent); color: var(--color-accent); }
+.filter-title { text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+.filter-subtitle { font-size: 0.65rem; opacity: 0.6; text-transform: none; margin-top: 2px; font-weight: 300; letter-spacing: 0.5px; }
 
 /* Collections Section */
 .collection-section { padding: 100px 40px; max-width: 1400px; margin: 0 auto; }
@@ -272,7 +274,9 @@ h1, h2, h3, .logo { font-family: var(--font-serif); font-weight: 400; letter-spa
 
   /* --- Filters --- */
   .filters { flex-wrap: wrap; gap: 10px; padding: 0 16px; }
-  .filter-btn { padding: 7px 14px; font-size: 0.78rem; }
+  .filter-btn { padding: 6px 14px; }
+  .filter-title { font-size: 0.75rem; }
+  .filter-subtitle { font-size: 0.6rem; }
 
   /* --- Collections Grid --- */
   .collection-section { padding: 50px 16px; }
