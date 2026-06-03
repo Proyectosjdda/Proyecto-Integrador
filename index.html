@@ -149,15 +149,15 @@
 
     <!-- Dashboard View (Hidden by default) -->
     <div id="dashboard-view" class="hidden" style="padding: 120px 40px 60px; max-width: 1200px; margin: 0 auto; min-height: 100vh;">
-      <h2 style="color: var(--color-accent); margin-bottom: 30px;">Dashboard de Administrador</h2>
+      <h2 style="color: var(--color-text); margin-bottom: 30px;">Dashboard de Administrador</h2>
       <button id="btn-dash-back" class="btn-back">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
         Volver a la Tienda
       </button>
-      <div class="table-responsive" style="background: #111; border: 1px solid #333; border-radius: 8px; overflow-x: auto; margin-top: 20px;">
-        <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff; min-width: 600px;">
+      <div class="table-responsive" style="background: #ffffff; border: 1px solid var(--color-card-border); border-radius: 8px; overflow-x: auto; margin-top: 20px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; color: var(--color-text); min-width: 600px;">
           <thead>
-            <tr style="background: #222; border-bottom: 1px solid #333;">
+            <tr style="background: #faf5ec; border-bottom: 1px solid var(--color-card-border); color: var(--color-text);">
               <th style="padding: 15px;">Imagen</th>
               <th style="padding: 15px;">Nombre</th>
               <th style="padding: 15px;">Autor</th>
@@ -171,11 +171,11 @@
         </table>
       </div>
 
-      <h3 style="color: var(--color-accent); margin-top: 60px; margin-bottom: 20px;">Registro de Actividad (Auditoría)</h3>
-      <div class="table-responsive" style="background: #111; border: 1px solid #333; border-radius: 8px; overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff; min-width: 600px;">
+      <h3 style="color: var(--color-text); margin-top: 60px; margin-bottom: 20px;">Registro de Actividad (Auditoría)</h3>
+      <div class="table-responsive" style="background: #ffffff; border: 1px solid var(--color-card-border); border-radius: 8px; overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; color: var(--color-text); min-width: 600px;">
           <thead>
-            <tr style="background: #222; border-bottom: 1px solid #333;">
+            <tr style="background: #faf5ec; border-bottom: 1px solid var(--color-card-border); color: var(--color-text);">
               <th style="padding: 15px;">Fecha / Hora</th>
               <th style="padding: 15px;">Acción</th>
               <th style="padding: 15px;">Prenda</th>
@@ -268,7 +268,7 @@
         <h2 id="auth-title">Iniciar Sesión</h2>
         <form id="auth-form">
           <input type="text" id="auth-name" placeholder="Nombre del Estudiante" class="hidden" />
-          <select id="auth-collection" class="hidden" style="width: 100%; padding: 12px; margin-bottom: 15px; background: #111; color: white; border: 1px solid #333; font-family: var(--font-sans);">
+          <select id="auth-collection" class="hidden">
             <option value="" disabled selected>Selecciona tu Colección</option>
             <option value="allegra">Allegra (E-241)</option>
             <option value="col2">Mila (B-242)</option>
@@ -304,7 +304,7 @@
             <img id="image-preview" class="hidden" alt="Preview" />
           </div>
 
-          <select id="up-collection" required style="width: 100%; padding: 12px; margin-bottom: 15px; background: #111; color: white; border: 1px solid #333; font-family: var(--font-sans);">
+          <select id="up-collection" required>
             <option value="" disabled selected>Selecciona una Colección</option>
             <option value="allegra">Allegra (E-241)</option>
             <option value="col2">Mila (B-242)</option>
@@ -312,7 +312,7 @@
             <option value="col4">Nostalgia del arte (B-243)</option>
           </select>
           <input type="text" id="up-sizes" placeholder="Tallas (ej. S, M, L)" required />
-          <textarea id="up-desc" placeholder="Descripción breve" required style="width: 100%; padding: 12px; margin-bottom: 15px; background: transparent; color: white; border: 1px solid #333; font-family: var(--font-sans);"></textarea>
+          <textarea id="up-desc" placeholder="Descripción breve" required></textarea>
           <button type="submit" class="btn-primary" style="width: 100%;">Subir a la Galería</button>
           <p id="upload-error" class="error-msg"></p>
         </form>

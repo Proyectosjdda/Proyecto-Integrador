@@ -794,10 +794,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function renderDashboard() {
   dashboardTableBody.innerHTML = products.map(product => `
-    <tr style="border-bottom: 1px solid #333;">
+    <tr style="border-bottom: 1px solid var(--color-card-border);">
       <td style="padding: 15px;"><img src="${product.image}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"></td>
       <td style="padding: 15px;">${product.name}</td>
-      <td style="padding: 15px;">${product.author || 'Anónimo'} <br><small style="color: #888;">${product.authorEmail || ''}</small></td>
+      <td style="padding: 15px;">${product.author || 'Anónimo'} <br><small style="color: var(--color-text-muted);">${product.authorEmail || ''}</small></td>
       <td style="padding: 15px;">${getCollectionDisplayName(product.category)}</td>
       <td style="padding: 15px;">
         <button onclick="deleteProductFromDash('${product.id}', '${product.name.replace(/'/g, "\\'")}')" style="background: #900; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;">Eliminar</button>
@@ -810,17 +810,17 @@ function renderDashboard() {
       const date = log.timestamp && log.timestamp.toDate ? log.timestamp.toDate() : new Date();
       const formattedDate = date.toLocaleString('es-CO');
       
-      let actionColor = '#fff';
+      let actionColor = 'var(--color-text)';
       if (log.action === 'Crear') actionColor = '#25D366';
       if (log.action === 'Editar') actionColor = 'var(--color-accent)';
       if (log.action === 'Eliminar') actionColor = '#ff4444';
 
       return `
-        <tr style="border-bottom: 1px solid #333;">
-          <td style="padding: 15px; color: #aaa;">${formattedDate}</td>
+        <tr style="border-bottom: 1px solid var(--color-card-border);">
+          <td style="padding: 15px; color: var(--color-text-muted);">${formattedDate}</td>
           <td style="padding: 15px; font-weight: bold; color: ${actionColor};">${log.action}</td>
           <td style="padding: 15px;">${log.productName}</td>
-          <td style="padding: 15px;">${log.userName || 'Usuario'} <br><small style="color: #888;">${log.userEmail}</small></td>
+          <td style="padding: 15px;">${log.userName || 'Usuario'} <br><small style="color: var(--color-text-muted);">${log.userEmail}</small></td>
         </tr>
       `;
     }).join('');
