@@ -304,7 +304,7 @@ function showProductDetail(product) {
   });
 
   btnBuyDirect.addEventListener('click', () => {
-    const text = encodeURIComponent(`Hola Valou, quiero pedir el producto: ${product.name} (Talla: ${selectedSize}).`);
+    const text = encodeURIComponent(`Hola Seconda, quiero pedir el producto: ${product.name} (Talla: ${selectedSize}).`);
     window.open(`https://wa.me/${WAPP_NUMBER}?text=${text}`, '_blank');
   });
 
@@ -537,7 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
   cartOverlay.addEventListener('click', closeCart);
   
   btnCheckoutCart.addEventListener('click', () => {
-    let orderText = "Hola Valou, quiero hacer el siguiente pedido:\n\n";
+    let orderText = "Hola Seconda, quiero hacer el siguiente pedido:\n\n";
     cart.forEach(item => {
       orderText += `- ${item.name} (Talla: ${item.size}) x${item.qty}\n`;
     });
