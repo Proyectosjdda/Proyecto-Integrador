@@ -17,8 +17,8 @@ let userProfile = null;
 function getCollectionDisplayName(category) {
   const mapping = {
     'allegra': 'Allegra (E-241)',
-    'col2': 'Mila (B242)',
-    'col3': 'Closet de Antonella (B241)',
+    'col2': 'Mila (B-242)',
+    'col3': 'Closet de Antonella (B-241)',
     'col4': 'Nostalgia del arte (B-243)'
   };
   return mapping[category] || category;
