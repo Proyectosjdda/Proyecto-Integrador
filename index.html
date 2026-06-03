@@ -9,7 +9,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- CSS -->
     <link rel="stylesheet" href="/style.css" />
@@ -20,7 +20,15 @@
       <div class="nav-container">
         <div class="logo" style="flex: 1; display: flex; justify-content: flex-start; align-items: center; gap: 15px;">
           <button id="mobile-menu-btn" class="mobile-menu-btn" style="display: none; background: transparent; border: none; color: var(--color-accent); font-size: 1.5rem; cursor: pointer;">☰</button>
-          <a href="#" id="logo-home" style="font-family: var(--font-serif); font-size: 1.4rem; font-weight: 300; letter-spacing: 4px; color: var(--color-accent); margin: 0; text-decoration: none; display: inline-block;">S E C O N D A</a>
+          <a href="#" id="logo-home" style="font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; letter-spacing: 4px; color: var(--color-accent); margin: 0; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+            S E C O N D A
+            <svg viewBox="0 0 100 100" width="30" height="30" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); flex-shrink: 0;">
+              <circle cx="50" cy="50" r="45" fill="#DFB15B" stroke="#3C3B39" stroke-width="5"/>
+              <circle cx="35" cy="40" r="6" fill="#3C3B39"/>
+              <circle cx="65" cy="40" r="6" fill="#3C3B39"/>
+              <path d="M 30,55 A 20,20 0 0,0 70,55" fill="none" stroke="#3C3B39" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+          </a>
         </div>
         <div class="nav-links">
           <a href="#" id="nav-home">INICIO</a>
@@ -49,14 +57,45 @@
           <img class="hero-bg" src="hero2.png" alt="Moda infantil de lujo vintage - Niña con vestido de terciopelo">
           <img class="hero-bg" src="hero3.png" alt="Moda infantil de lujo vintage - Estilo de otoño para niños">
         </div>
-        <div class="hero-overlay" style="background: rgba(0,0,0,0.6);"></div>
+        
+        <!-- Decorative Scrapbook Stickers -->
+        <div class="scrapbook-sticker sticker-cherry" style="top: 22%; left: 8%;">
+          <svg viewBox="0 0 100 100" width="80" height="80">
+            <circle cx="35" cy="65" r="18" fill="#E57E72" stroke="#ffffff" stroke-width="4"/>
+            <circle cx="68" cy="68" r="18" fill="#E57E72" stroke="#ffffff" stroke-width="4"/>
+            <path d="M 35,47 Q 50,25 70,30" fill="none" stroke="#9AA473" stroke-width="6" stroke-linecap="round"/>
+            <path d="M 68,50 Q 60,35 70,30" fill="none" stroke="#9AA473" stroke-width="6" stroke-linecap="round"/>
+            <path d="M 70,30 Q 75,20 85,25 Q 80,35 70,30" fill="#9AA473" stroke="#ffffff" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="scrapbook-sticker sticker-flower" style="bottom: 18%; right: 10%;">
+          <svg viewBox="0 0 100 100" width="90" height="90">
+            <circle cx="50" cy="50" r="16" fill="#DFB15B" stroke="#ffffff" stroke-width="4"/>
+            <!-- Petals -->
+            <circle cx="50" cy="20" r="14" fill="#D0A7CB" stroke="#ffffff" stroke-width="3"/>
+            <circle cx="50" cy="80" r="14" fill="#D0A7CB" stroke="#ffffff" stroke-width="3"/>
+            <circle cx="20" cy="50" r="14" fill="#D0A7CB" stroke="#ffffff" stroke-width="3"/>
+            <circle cx="80" cy="50" r="14" fill="#D0A7CB" stroke="#ffffff" stroke-width="3"/>
+            <circle cx="50" cy="50" r="16" fill="#DFB15B" stroke="#ffffff" stroke-width="4"/>
+          </svg>
+        </div>
+        <div class="scrapbook-sticker sticker-smiley" style="top: 25%; right: 12%;">
+          <svg viewBox="0 0 100 100" width="70" height="70">
+            <circle cx="50" cy="50" r="42" fill="#7398C4" stroke="#ffffff" stroke-width="5"/>
+            <circle cx="35" cy="40" r="6" fill="#ffffff"/>
+            <circle cx="65" cy="40" r="6" fill="#ffffff"/>
+            <path d="M 30,55 A 20,20 0 0,0 70,55" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="hero-overlay" style="background: rgba(0,0,0,0.5);"></div>
         <div class="hero-content" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-perspective="1000">
           <p class="hero-overline" style="color: var(--color-accent); letter-spacing: 6px; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 20px;">UTS</p>
-          <h1 class="hero-title" style="font-family: var(--font-serif); font-size: 4rem; font-weight: 300; line-height: 1.1; margin-bottom: 25px;">
+          <h1 class="hero-title" style="font-family: var(--font-serif); font-size: 4.5rem; font-weight: 700; line-height: 1.1; margin-bottom: 20px;">
             <span style="color: white; display: block;">Diseño Con</span>
             <span style="color: var(--color-accent); display: block;">Propósito</span>
           </h1>
-          <p class="hero-subtitle" style="font-family: var(--font-sans); font-size: 1rem; color: #ddd; max-width: 600px; margin: 0 auto 40px auto; line-height: 1.6;">Diseño, creatividad y aprendizaje en cada puntada</p>
+          <p class="hero-subtitle" style="font-family: var(--font-hand); font-size: 2.2rem; color: var(--color-pastel-gold); max-width: 600px; margin: 0 auto 30px auto; line-height: 1.2; letter-spacing: 1px;">Diseño, creatividad y aprendizaje en cada puntada</p>
           <div class="hero-buttons" style="display: flex; gap: 20px; justify-content: center;">
             <a href="#collections" class="btn-primary" style="background: var(--color-accent); color: #000; border: none; padding: 15px 30px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500;">Ver Catálogo →</a>
           </div>
