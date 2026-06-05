@@ -544,3 +544,22 @@ h1, h2, h3, .logo { font-family: var(--font-serif); font-weight: 400; letter-spa
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(229, 126, 114, 0.15);
 }
+
+@media (max-width: 768px) {
+  .preview-thumb-remove {
+    width: 24px;
+    height: 24px;
+    font-size: 13px;
+    top: 2px;
+    right: 2px;
+  }
+  .gallery-nav-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+  .thumbnail-item {
+    width: 64px;
+    height: 64px;
+  }
+}

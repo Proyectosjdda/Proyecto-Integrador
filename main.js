@@ -382,6 +382,31 @@ function showProductDetail(product) {
         updateMainImage(index);
       });
     });
+
+    // Touch swipe gestures for mobile navigation
+    if (mainImg) {
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      mainImg.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      mainImg.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const swipeThreshold = 50; // pixels
+        if (touchEndX < touchStartX - swipeThreshold) {
+          // Swipe left -> next image
+          let index = (currentImageIndex + 1) % images.length;
+          updateMainImage(index);
+        } else if (touchEndX > touchStartX + swipeThreshold) {
+          // Swipe right -> previous image
+          let index = currentImageIndex - 1;
+          if (index < 0) index = images.length - 1;
+          updateMainImage(index);
+        }
+      }, { passive: true });
+    }
   }
 
   const btnEdit = document.getElementById('btn-edit-product');
