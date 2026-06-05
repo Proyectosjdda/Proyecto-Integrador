@@ -225,6 +225,15 @@ function openEditModal(product) {
   } else {
     upCol.disabled = false;
   }
+
+  // Populate tempImages with existing product images
+  tempImages = [];
+  if (product.images && product.images.length > 0) {
+    tempImages = product.images.map(url => ({ type: 'existing', url }));
+  } else if (product.image) {
+    tempImages = [{ type: 'existing', url: product.image }];
+  }
+  renderUploadPreviews();
   
   uploadModal.classList.remove('hidden');
 }
@@ -243,10 +252,30 @@ function showProductDetail(product) {
     `<button class="size-btn detail-size-btn" data-size="${size}">${size}</button>`
   ).join('');
 
+  const images = product.images && product.images.length > 0 ? product.images : [product.image];
+  const hasMultiple = images.length > 1;
+
+  const navButtonsHtml = hasMultiple ? `
+    <button id="gallery-prev" class="gallery-nav-btn">&#10094;</button>
+    <button id="gallery-next" class="gallery-nav-btn">&#10095;</button>
+  ` : '';
+
+  const thumbnailsHtml = hasMultiple ? `
+    <div class="thumbnail-strip" id="gallery-thumbnails">
+      ${images.map((imgUrl, index) => `
+        <img src="${imgUrl}" class="thumbnail-item ${index === 0 ? 'active' : ''}" data-index="${index}" alt="Miniatura ${index + 1}">
+      `).join('')}
+    </div>
+  ` : '';
+
   detailContent.innerHTML = `
     <div class="detail-grid">
-      <div>
-        <img src="${product.image}" alt="${product.name}" class="detail-image">
+      <div class="gallery-container">
+        <div class="main-image-wrapper">
+          <img src="${images[0]}" alt="${product.name}" class="detail-image" id="gallery-main">
+          ${navButtonsHtml}
+        </div>
+        ${thumbnailsHtml}
       </div>
       <div>
         <h2 class="detail-title">${product.name}</h2>
@@ -256,7 +285,6 @@ function showProductDetail(product) {
         
         <div class="detail-meta">
           <p><strong>Colección:</strong> <span>${getCollectionDisplayName(product.category)}</span></p>
-          <p><strong>Vendedor:</strong> ${product.author || 'Usuario'}</p>
           ${product.authors ? `<p><strong>Autores:</strong> ${product.authors}</p>` : ''}
           ${product.materials ? `<p><strong>Materiales:</strong> ${product.materials}</p>` : ''}
         </div>
@@ -307,6 +335,54 @@ function showProductDetail(product) {
     const text = encodeURIComponent(`Hola Seconda, quiero pedir el producto: ${product.name} (Talla: ${selectedSize}).`);
     window.open(`https://wa.me/${WAPP_NUMBER}?text=${text}`, '_blank');
   });
+
+  // Gallery Navigation Lgc
+  if (hasMultiple) {
+    let currentImageIndex = 0;
+    const mainImg = document.getElementById('gallery-main');
+    const prevBtn = document.getElementById('gallery-prev');
+    const nextBtn = document.getElementById('gallery-next');
+    const thumbs = document.querySelectorAll('.thumbnail-item');
+
+    function updateMainImage(index) {
+      currentImageIndex = index;
+      if (mainImg) {
+        mainImg.style.opacity = '0';
+        setTimeout(() => {
+          mainImg.src = images[currentImageIndex];
+          mainImg.style.opacity = '1';
+        }, 150);
+      }
+      thumbs.forEach(t => t.classList.remove('active'));
+      const activeThumb = document.querySelector(`.thumbnail-item[data-index="${currentImageIndex}"]`);
+      if (activeThumb) {
+        activeThumb.classList.add('active');
+        activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        let index = currentImageIndex - 1;
+        if (index < 0) index = images.length - 1;
+        updateMainImage(index);
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        let index = (currentImageIndex + 1) % images.length;
+        updateMainImage(index);
+      });
+    }
+
+    thumbs.forEach(thumb => {
+      thumb.addEventListener('click', (e) => {
+        const index = parseInt(e.target.getAttribute('data-index'));
+        updateMainImage(index);
+      });
+    });
+  }
 
   const btnEdit = document.getElementById('btn-edit-product');
   const btnDelete = document.getElementById('btn-delete-product');
@@ -617,8 +693,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('up-file');
   const dropText = document.getElementById('drop-text');
-  const imagePreview = document.getElementById('image-preview');
-  let selectedFile = null;
+  let tempImages = [];
 
   btnUploadOpen.addEventListener('click', () => {
     if (userProfile && userProfile.role !== 'admin') {
@@ -638,12 +713,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetUploadForm() {
     uploadForm.reset();
-    selectedFile = null;
+    tempImages = [];
     delete uploadForm.dataset.editId;
-    imagePreview.classList.add('hidden');
-    imagePreview.src = '';
-    dropText.classList.remove('hidden');
+    renderUploadPreviews();
   }
+
+  function renderUploadPreviews() {
+    const previewContainer = document.getElementById('preview-container');
+    previewContainer.innerHTML = '';
+    
+    if (tempImages.length === 0) {
+      previewContainer.classList.add('hidden');
+      dropText.classList.remove('hidden');
+      return;
+    }
+    
+    previewContainer.classList.remove('hidden');
+    dropText.classList.add('hidden');
+    
+    tempImages.forEach((img, idx) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'preview-thumb-wrapper';
+      
+      const imgSrc = img.type === 'existing' ? img.url : img.previewUrl;
+      
+      wrapper.innerHTML = `
+        <img src="${imgSrc}" class="preview-thumb" alt="Preview">
+        <button type="button" class="preview-thumb-remove" onclick="removeTempImage(${idx})">&times;</button>
+      `;
+      previewContainer.appendChild(wrapper);
+    });
+  }
+
+  window.removeTempImage = function(index) {
+    tempImages.splice(index, 1);
+    renderUploadPreviews();
+  };
 
   // Drag and drop events
   dropzone.addEventListener('click', () => fileInput.click());
@@ -661,30 +766,41 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     dropzone.classList.remove('dragover');
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFileSelect(e.dataTransfer.files[0]);
+      handleFileSelect(e.dataTransfer.files);
     }
   });
 
   fileInput.addEventListener('change', (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      handleFileSelect(e.target.files[0]);
+      handleFileSelect(e.target.files);
     }
   });
 
-  function handleFileSelect(file) {
-    if (!file.type.startsWith('image/')) {
-      uploadError.innerText = 'Por favor selecciona un archivo de imagen válido.';
-      return;
+  function handleFileSelect(files) {
+    let invalidCount = 0;
+    Array.from(files).forEach(file => {
+      if (!file.type.startsWith('image/')) {
+        invalidCount++;
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        tempImages.push({
+          type: 'new',
+          file: file,
+          previewUrl: e.target.result
+        });
+        renderUploadPreviews();
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    if (invalidCount > 0) {
+      uploadError.innerText = 'Algunos archivos no eran imágenes válidas y se omitieron.';
+    } else {
+      uploadError.innerText = '';
     }
-    selectedFile = file;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      imagePreview.src = e.target.result;
-      imagePreview.classList.remove('hidden');
-      dropText.classList.add('hidden');
-    };
-    reader.readAsDataURL(file);
-    uploadError.innerText = '';
   }
 
   uploadForm.addEventListener('submit', async (e) => {
@@ -696,8 +812,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (!selectedFile && !uploadForm.dataset.editId) {
-      uploadError.innerText = 'Por favor, selecciona o arrastra una imagen.';
+    if (tempImages.length === 0) {
+      uploadError.innerText = 'Por favor, selecciona o arrastra al menos una imagen.';
       return;
     }
 
@@ -713,40 +829,47 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const submitBtn = uploadForm.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerText;
-    submitBtn.innerText = 'Subiendo foto...';
+    submitBtn.innerText = 'Subiendo fotos...';
     submitBtn.disabled = true;
 
     try {
-      let downloadURL = null;
-      if (selectedFile) {
-        // Upload image to Storage if a new one was selected
-        const fileRef = ref(storage, `products/${Date.now()}_${selectedFile.name}`);
-        const uploadResult = await uploadBytes(fileRef, selectedFile);
-        downloadURL = await getDownloadURL(uploadResult.ref);
+      const finalUrls = [];
+      for (const img of tempImages) {
+        if (img.type === 'existing') {
+          finalUrls.push(img.url);
+        } else if (img.type === 'new') {
+          const fileRef = ref(storage, `products/${Date.now()}_${img.file.name}`);
+          const uploadResult = await uploadBytes(fileRef, img.file);
+          const downloadURL = await getDownloadURL(uploadResult.ref);
+          finalUrls.push(downloadURL);
+        }
+      }
+
+      if (finalUrls.length === 0) {
+        throw new Error("Se requiere al menos una imagen.");
       }
 
       const editId = uploadForm.dataset.editId;
+      const productData = {
+        name,
+        price,
+        authors,
+        materials,
+        category,
+        sizes,
+        description,
+        image: finalUrls[0],
+        images: finalUrls
+      };
       
       if (editId) {
         // Update existing document
-        const updateData = {
-          name, price, authors, materials, category, sizes, description
-        };
-        if (downloadURL) updateData.image = downloadURL;
-        await updateDoc(doc(db, 'products', editId), updateData);
+        await updateDoc(doc(db, 'products', editId), productData);
         await logAudit('Editar', name);
       } else {
         // Save new document to Firestore
-        if (!downloadURL) throw new Error("Image required for new upload");
         await addDoc(collection(db, 'products'), {
-          name,
-          price,
-          authors,
-          materials,
-          image: downloadURL,
-          category,
-          sizes,
-          description,
+          ...productData,
           author: currentUser.displayName || currentUser.email.split('@')[0],
           authorEmail: currentUser.email,
           authorUid: currentUser.uid,
@@ -759,7 +882,7 @@ document.addEventListener('DOMContentLoaded', () => {
       resetUploadForm();
     } catch (err) {
       console.error(err);
-      uploadError.innerText = 'Error al subir: Verifica que Storage esté habilitado en modo prueba.';
+      uploadError.innerText = 'Error al subir: Verifica tu conexión y que Firebase Storage esté habilitado.';
     } finally {
       submitBtn.innerText = originalText;
       submitBtn.disabled = false;
