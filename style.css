@@ -114,6 +114,36 @@ h1, h2, h3, .logo { font-family: var(--font-serif); font-weight: 400; letter-spa
 .filter-title { text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
 .filter-subtitle { font-size: 0.65rem; opacity: 0.6; text-transform: none; margin-top: 2px; font-weight: 300; letter-spacing: 0.5px; }
 
+/* Sub-Filters */
+.sub-filters {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: -15px;
+  margin-bottom: 45px;
+  flex-wrap: wrap;
+}
+
+.sub-filter-btn {
+  background: #ffffff;
+  border: 1px solid var(--color-card-border);
+  color: var(--color-text-muted);
+  padding: 6px 18px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.sub-filter-btn:hover, .sub-filter-btn.active {
+  border-color: var(--color-accent);
+  color: #ffffff;
+  background: var(--color-accent);
+}
+
 /* Collections Section */
 .collection-section { padding: 100px 40px; max-width: 1400px; margin: 0 auto; }
 .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 40px; color: var(--color-accent); }
@@ -349,7 +379,10 @@ h1, h2, h3, .logo { font-family: var(--font-serif); font-weight: 400; letter-spa
   .filters { flex-wrap: wrap; gap: 10px; padding: 0 16px; }
   .filter-btn { padding: 6px 14px; }
   .filter-title { font-size: 0.75rem; }
-  .filter-subtitle { font-size: 0.6rem; }
+  .filter-subtitle { font-size: 0.65rem; }
+
+  .sub-filters { gap: 8px; padding: 0 16px; margin-top: -10px; margin-bottom: 30px; }
+  .sub-filter-btn { padding: 5px 12px; font-size: 0.75rem; }
 
   /* --- Collections Grid --- */
   .collection-section { padding: 50px 16px; }

@@ -159,6 +159,14 @@
           </button>
         </div>
 
+        <!-- Sub-Filters for Garment Type -->
+        <div class="sub-filters">
+          <button class="sub-filter-btn active" data-subfilter="all">Todas</button>
+          <button class="sub-filter-btn" data-subfilter="prenda_superior">Prendas Superiores</button>
+          <button class="sub-filter-btn" data-subfilter="prenda_inferior">Prendas Inferiores</button>
+          <button class="sub-filter-btn" data-subfilter="accesorios">Accesorios</button>
+        </div>
+
         <div class="grid-container" id="product-grid">
           <!-- Products will be injected via JS -->
         </div>
@@ -349,6 +357,12 @@
             <option value="col2">Mila (B-242)</option>
             <option value="col3">Closet de Antonella (B-241)</option>
             <option value="col4">Nostalgia del arte (B-243)</option>
+          </select>
+          <select id="up-garment-type" required>
+            <option value="" disabled selected>Selecciona Tipo de Prenda</option>
+            <option value="prenda_superior">Prenda Superior (Camisa, Blusa, Chaqueta, Abrigo, etc.)</option>
+            <option value="prenda_inferior">Prenda Inferior (Falda, Pantalón, Short, etc.)</option>
+            <option value="accesorios">Accesorio (Bolso, Diadema, Medias, Bufanda, etc.)</option>
           </select>
           <input type="text" id="up-sizes" placeholder="Tallas (ej. S, M, L)" required />
           <textarea id="up-desc" placeholder="Descripción breve" required></textarea>

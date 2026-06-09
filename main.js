@@ -8,6 +8,7 @@ let products = [];
 let cart = [];
 let auditLogs = [];
 let currentFilter = 'all';
+let currentGarmentFilter = 'all';
 let currentUser = null;
 let currentProductDetail = null;
 
@@ -136,7 +137,11 @@ async function logAudit(action, productName) {
 
 function renderProducts() {
   grid.innerHTML = '';
-  const filtered = currentFilter === 'all' ? products : products.filter(p => p.category === currentFilter);
+  const filtered = products.filter(p => {
+    const matchesCollection = currentFilter === 'all' || p.category === currentFilter;
+    const matchesGarmentType = currentGarmentFilter === 'all' || p.garmentType === currentGarmentFilter;
+    return matchesCollection && matchesGarmentType;
+  });
   
   if (filtered.length === 0) {
     grid.innerHTML = '<p style="color: #888; text-align: center; grid-column: 1/-1;">No hay prendas en esta colección aún.</p>';
@@ -214,6 +219,7 @@ function openEditModal(product) {
   document.getElementById('up-authors').value = product.authors || '';
   document.getElementById('up-materials').value = product.materials || '';
   document.getElementById('up-collection').value = product.category || 'allegra';
+  document.getElementById('up-garment-type').value = product.garmentType || 'prenda_superior';
   document.getElementById('up-sizes').value = product.sizes || '';
   document.getElementById('up-desc').value = product.description || '';
   
@@ -551,6 +557,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Sub-Filters for Garment Type
+  const subFilterBtns = document.querySelectorAll('.sub-filter-btn');
+  subFilterBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      subFilterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentGarmentFilter = btn.getAttribute('data-subfilter');
+      renderProducts();
+    });
+  });
+
   // Logo → go home
   document.getElementById('logo-home').addEventListener('click', (e) => {
     e.preventDefault();
@@ -849,6 +866,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const category = (userProfile && userProfile.role !== 'admin') 
       ? userProfile.collection || 'allegra' 
       : document.getElementById('up-collection').value;
+    const garmentType = document.getElementById('up-garment-type').value;
     const sizes = document.getElementById('up-sizes').value;
     const description = document.getElementById('up-desc').value;
     
@@ -881,6 +899,7 @@ document.addEventListener('DOMContentLoaded', () => {
         authors,
         materials,
         category,
+        garmentType,
         sizes,
         description,
         image: finalUrls[0],
@@ -946,7 +965,10 @@ function renderDashboard() {
       <td style="padding: 15px;"><img src="${product.image}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"></td>
       <td style="padding: 15px;">${product.name}</td>
       <td style="padding: 15px;">${product.author || 'Anónimo'} <br><small style="color: var(--color-text-muted);">${product.authorEmail || ''}</small></td>
-      <td style="padding: 15px;">${getCollectionDisplayName(product.category)}</td>
+      <td style="padding: 15px;">
+        ${getCollectionDisplayName(product.category)}
+        <br><small style="color: var(--color-text-muted); text-transform: uppercase;">${(product.garmentType || 'prenda_superior').replace('_', ' ')}</small>
+      </td>
       <td style="padding: 15px;">
         <button onclick="deleteProductFromDash('${product.id}', '${product.name.replace(/'/g, "\\'")}')" style="background: #900; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;">Eliminar</button>
       </td>
