@@ -50,13 +50,9 @@ const btnLogout = document.getElementById('btn-logout');
 const authForm = document.getElementById('auth-form');
 const authEmail = document.getElementById('auth-email');
 const authPassword = document.getElementById('auth-password');
-const authName = document.getElementById('auth-name');
-const authCollection = document.getElementById('auth-collection');
-const authToggleBtn = document.getElementById('auth-toggle-btn');
 const authTitle = document.getElementById('auth-title');
 const authSubmit = document.getElementById('auth-submit');
 const authError = document.getElementById('auth-error');
-let isRegisterMode = false;
 
 // Upload DOM
 const uploadModal = document.getElementById('upload-modal');
@@ -68,11 +64,19 @@ const uploadError = document.getElementById('upload-error');
 // --- FIREBASE SYNC ---
 // --- FIREBASE SYNC ---
 onAuthStateChanged(auth, async (user) => {
+  if (user && user.email !== ADMIN_EMAIL) {
+    await signOut(auth);
+    return;
+  }
   currentUser = user;
   if (user) {
     document.getElementById('btn-login-open').classList.add('hidden');
     document.getElementById('btn-logout').classList.remove('hidden');
-    document.getElementById('btn-upload-open').classList.remove('hidden');
+    
+    if (user.email === ADMIN_EMAIL) {
+      document.getElementById('btn-upload-open').classList.remove('hidden');
+      document.getElementById('btn-dashboard').classList.remove('hidden');
+    }
     
     try {
       const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -80,10 +84,6 @@ onAuthStateChanged(auth, async (user) => {
         userProfile = userDoc.data();
       }
     } catch(e) { console.error("Error fetching user profile", e); }
-    
-    if (user.email === ADMIN_EMAIL) {
-      document.getElementById('btn-dashboard').classList.remove('hidden');
-    }
   } else {
     userProfile = null;
     document.getElementById('btn-login-open').classList.remove('hidden');
@@ -669,61 +669,23 @@ document.addEventListener('DOMContentLoaded', () => {
   closeAuthModal.addEventListener('click', () => {
     authModal.classList.add('hidden');
   });
-  function toggleAuthMode(e) {
-    if (e) e.preventDefault();
-    isRegisterMode = !isRegisterMode;
-    authTitle.innerText = isRegisterMode ? 'Registrarse' : 'Iniciar Sesión';
-    authSubmit.innerText = isRegisterMode ? 'Crear Cuenta' : 'Entrar';
-    
-    if (isRegisterMode) {
-      authName.classList.remove('hidden');
-      authName.setAttribute('required', 'true');
-      authCollection.classList.remove('hidden');
-      authCollection.setAttribute('required', 'true');
-      document.getElementById('auth-toggle-text').innerHTML = `¿Ya tienes cuenta? <a href="#" id="auth-toggle-btn" style="color: var(--color-accent);">Entrar</a>`;
-    } else {
-      authName.classList.add('hidden');
-      authName.removeAttribute('required');
-      authCollection.classList.add('hidden');
-      authCollection.removeAttribute('required');
-      document.getElementById('auth-toggle-text').innerHTML = `¿No tienes cuenta? <a href="#" id="auth-toggle-btn" style="color: var(--color-accent);">Regístrate</a>`;
-    }
-    
-    document.getElementById('auth-toggle-btn').addEventListener('click', toggleAuthMode);
-  }
-
-  authToggleBtn.addEventListener('click', toggleAuthMode);
-
   authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = authEmail.value;
     const password = authPassword.value;
-    const name = authName.value;
     authError.innerText = '';
     
+    if (email !== ADMIN_EMAIL) {
+      authError.innerText = 'Error: Solo la cuenta administradora tiene permitido el acceso.';
+      return;
+    }
+    
     try {
-      if (isRegisterMode) {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(userCredential.user, { displayName: name });
-        
-        // Save to users collection
-        await setDoc(doc(db, 'users', userCredential.user.uid), {
-          email: email,
-          name: name,
-          collection: authCollection.value,
-          role: email === ADMIN_EMAIL ? 'admin' : 'user'
-        });
-
-        // Update local currentUser immediately so upload sees it without reload
-        currentUser = { ...userCredential.user, displayName: name };
-        userProfile = { email, name, collection: authCollection.value, role: email === ADMIN_EMAIL ? 'admin' : 'user' };
-      } else {
-        await signInWithEmailAndPassword(auth, email, password);
-      }
+      await signInWithEmailAndPassword(auth, email, password);
       authModal.classList.add('hidden');
       authForm.reset();
     } catch (err) {
-      authError.innerText = 'Error: No se pudo completar la acción. Verifica si tienes Auth habilitado en Firebase.';
+      authError.innerText = 'Error: No se pudo iniciar sesión. Verifica tu correo y contraseña.';
     }
   });
 
